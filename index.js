@@ -128,7 +128,7 @@ async function corrigirStorageNegativo() {
   }
 }
 
-cron.schedule("*/3 * * * *", corrigirStorageNegativo);
+//cron.schedule("*/3 * * * *", corrigirStorageNegativo);
 
 async function sincronizarBancoDeDados() {
   try {
@@ -139,8 +139,8 @@ async function sincronizarBancoDeDados() {
     console.error("Erro ao sincronizar o banco de dados:", error);
   }
 }
-cron.schedule("*/3 * * * *", verificarCotas);
-verificarCotas();
+//cron.schedule("*/3 * * * *", verificarCotas);
+//verificarCotas();
 sincronizarBancoDeDados();
 
 // Permita solicitações de diferentes origens
