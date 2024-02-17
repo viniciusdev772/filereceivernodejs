@@ -48,7 +48,7 @@ async function apagar(req, res) {
     await fs.remove(arquivo.caminho);
     //atualizar storage do usuario
     const usuario = await Usuario.findByPk(decoded.uid);
-    const novoStorage = usuario.storage + arquivo.size;
+    const novoStorage = parseFloat(usuario.storage) + parseFloat(arquivo.size);
     await Usuario.update(
       { storage: novoStorage },
       { where: { uid: decoded.uid } }
