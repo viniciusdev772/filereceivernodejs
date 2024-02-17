@@ -54,9 +54,14 @@ async function verificarCotas() {
           // Seu código para lidar com a remoção do arquivo e notificação ao usuário
         }
       } else {
-        console.log(
-          `O limite  ${usuario.nome} não está para 1GB.`
-        );
+        console.log(`O limite  ${usuario.nome} não está para 1GB.`);
+        if (arquivo.size > usuario.storage) {
+          console.log(
+            `O arquivo ${arquivo.nome} (${arquivo.size} bytes) excede a cota do usuário ${usuario.nome} (${usuario.storage} bytes).`
+          );
+
+          // Seu código para lidar com a remoção do arquivo e notificação ao usuário
+        }
       }
     }
   } catch (error) {
