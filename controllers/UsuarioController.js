@@ -361,7 +361,6 @@ async function MudarPlano(req, res) {
           plano: "1GB",
         });
         const copia = resposta.pixCopiaECola;
-
         QRCode.toDataURL(
           copia,
           {
@@ -376,26 +375,27 @@ async function MudarPlano(req, res) {
             base64QRCode = url;
           }
         );
+
+        transporter
+          .sendMail({
+            from: '"SERVER VDEV" <suv@viniciusdev.com.br>',
+            to: usuario.email,
+            subject: "Seu pedido de 5gb",
+            text: `Olá, ${usuario.nome}. Seu pedido de pagamento PIX foi criado com sucesso. O número do pedido é ${numeroPedido}., `,
+          })
+          .then(() => {
+            console.log("Email enviado com sucesso.");
+          })
+
+          .catch((error) =>
+            console.error("Erro ao criar pagamento PIX:", error)
+          );
+        res.status(200).send({
+          message: "Pague e tenha seus GB ativos em até 24 horas.",
+          qrCodeText: copia,
+          qrCodeImg: base64QRCode,
+        });
       });
-
-      res.status(200).send({
-        message: "Pague e tenha seus GB ativos em até 24 horas.",
-        qrCodeText: copia,
-        qrCodeImg: base64QRCode,
-      });
-
-      await transporter
-        .sendMail({
-          from: '"SERVER VDEV" <suv@viniciusdev.com.br>',
-          to: usuario.email,
-          subject: "Seu pedido de 5gb",
-          text: `Olá, ${usuario.nome}. Seu pedido de pagamento PIX foi criado com sucesso. O número do pedido é ${numeroPedido}., `,
-        })
-        .then(() => {
-          console.log("Email enviado com sucesso.");
-        })
-
-        .catch((error) => console.error("Erro ao criar pagamento PIX:", error));
     } else if (plano === "5GB") {
     } else {
     }
