@@ -42,31 +42,17 @@ async function verificarCotas() {
       console.log("umGBEmBytes", umGBEmBytes);
 
       // Verifica se o limite de armazenamento está configurado para 1GB
-      if (usuario.storage === umGBEmBytes) {
+      console.log(`O limite  ${usuario.nome} não está para 1GB.`);
+      if (arquivo.size > usuario.storage) {
         console.log(
-          `O limite de armazenamento do usuário ${usuario.nome} está configurado para 1GB.`
+          `O arquivo ${arquivo.nome} (${arquivo.size} bytes) excede a cota do usuário ${usuario.nome} (${usuario.storage} bytes).`
         );
 
-        if (arquivo.size > usuario.storage) {
-          console.log(
-            `O arquivo ${arquivo.nome} (${arquivo.size} bytes) excede a cota do usuário ${usuario.nome} (${usuario.storage} bytes).`
-          );
-
-          // Seu código para lidar com a remoção do arquivo e notificação ao usuário
-        }
+        // Seu código para lidar com a remoção do arquivo e notificação ao usuário
       } else {
-        console.log(`O limite  ${usuario.nome} não está para 1GB.`);
-        if (arquivo.size > usuario.storage) {
-          console.log(
-            `O arquivo ${arquivo.nome} (${arquivo.size} bytes) excede a cota do usuário ${usuario.nome} (${usuario.storage} bytes).`
-          );
-
-          // Seu código para lidar com a remoção do arquivo e notificação ao usuário
-        } else {
-          console.log(
-            `O arquivo ${arquivo.nome} (${arquivo.size} bytes) não excede a cota do usuário ${usuario.nome} (${usuario.storage} bytes).`
-          );
-        }
+        console.log(
+          `O arquivo ${arquivo.nome} (${arquivo.size} bytes) não excede a cota do usuário ${usuario.nome} (${usuario.storage} bytes).`
+        );
       }
     }
   } catch (error) {
