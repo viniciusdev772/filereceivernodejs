@@ -1,45 +1,59 @@
 const Usuario = require("../models/usuarios");
-const nodemailer = require("nodemailer");
-const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
-const { v4: uuidv4 } = require("uuid");
-const multer = require("multer");
-
 const arquivosModel = require("../models/arquivos");
 const fs = require("fs-extra");
+const jwt = require("jsonwebtoken");
 
+// Função auxiliar para verificar token
+const verificarToken = (token) => {
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, "seu_secret_jwt", (err, decoded) => {
+      if (err) {
+        reject("Token inválido");
+      } else {
+        resolve(decoded);
+      }
+    });
+  });
+};
+
+// Função para apagar arquivo
 async function apagar(req, res) {
-  //obter o token
-  const token = req.headers.authorization;
-  if (!token) {
-    return res.status(401).json({ erro: "Token não informado" });
-  }
-  jwt.verify(token, "seu_secret_jwt", async (err, decoded) => {
-    if (err) {
-      return res.status(401).json({ erro: "Token inválido" });
+  try {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ erro: "Token não informado" });
     }
-    const uid = decoded.uid;
-    console.log(decoded);
+
+    const decoded = await verificarToken(token);
     const { fileId } = req.body;
-    console.log(req.body);
     const arquivo = await arquivosModel.findOne({
       where: {
         uid: fileId,
-        uid_dono: uid,
+        uid_dono: decoded.uid,
       },
     });
+
     if (!arquivo) {
       return res.status(404).json({ erro: "Arquivo não encontrado" });
     }
+
     await arquivosModel.destroy({
       where: {
         uid: fileId,
-        uid_dono: uid,
+        uid_dono: decoded.uid,
       },
     });
+
     await fs.remove(arquivo.caminho);
     return res.status(200).json({ mensagem: "Arquivo removido com sucesso" });
-  });
+  } catch (erro) {
+    if (erro === "Token inválido") {
+      return res.status(401).json({ erro });
+    } else {
+      console.error(erro);
+      return res.status(500).json({ erro: "Erro ao processar a solicitação" });
+    }
+  }
 }
 
 module.exports = {
