@@ -19,10 +19,10 @@ async function apagar(req, res) {
       return res.status(401).json({ erro: "Token inválido" });
     }
     const { uid } = decoded;
-    const { uid_arquivo } = req.params;
+    const { fileId } = req.params;
     const arquivo = await arquivosModel.findOne({
       where: {
-        uid: uid_arquivo,
+        uid: fileId,
         uid_dono: uid,
       },
     });
@@ -31,7 +31,7 @@ async function apagar(req, res) {
     }
     await arquivosModel.destroy({
       where: {
-        uid: uid_arquivo,
+        uid: fileId,
         uid_dono: uid,
       },
     });
