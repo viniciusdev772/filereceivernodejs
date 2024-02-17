@@ -13,6 +13,9 @@ const Arquivo = require("./models/arquivos"); // Importa o modelo de arquivos
 const nodemailer = require("nodemailer");
 
 const UsuarioController = require("./controllers/UsuarioController");
+const FilesController = require("./controllers/FilesController");
+
+app.post("/delete_event", FilesController.apagar);
 
 const cron = require("node-cron");
 const transporter = nodemailer.createTransport({
