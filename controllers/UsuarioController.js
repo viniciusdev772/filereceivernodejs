@@ -398,7 +398,7 @@ async function MudarPlano(req, res) {
         res.status(200).send({
           message: "Pague e tenha seus GB ativos em até 24 horas.",
           qrCodeText: copia,
-          qrCodeImg: qrCodeURL,
+          qrCodeImg: generateQR(copia),
         });
       });
     } else if (plano === "5GB") {
