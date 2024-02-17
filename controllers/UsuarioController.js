@@ -343,7 +343,7 @@ async function MudarPlano(req, res) {
     // Define a data e hora atual
     const dataAtual = moment();
 
-    const base64QRCode = "";
+    let base64QRCode = "";
 
     // Adiciona 30 dias à data atual para calcular a data de expiração
     const dataExpiracao = dataAtual.add(30, "days");
