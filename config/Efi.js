@@ -36,8 +36,3 @@ async function criarPagamentoPix(valor, numeroPedido) {
 
 // Exemplo de como usar a função
 // Substitua '123.45' pelo valor desejado e 'NUMERO_DO_PEDIDO' pelo número do pedido do cliente
-criarPagamentoPix("123.45", "NUMERO_DO_PEDIDO")
-  .then((resposta) =>
-    console.log("Pagamento PIX criado com sucesso:", resposta)
-  )
-  .catch((error) => console.error("Erro ao criar pagamento PIX:", error));

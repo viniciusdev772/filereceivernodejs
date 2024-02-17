@@ -30,6 +30,11 @@ Usuario.init(
         isEmail: true,
       },
     },
+    expira_em: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: "0",
+    },
     senha: {
       type: DataTypes.STRING,
       allowNull: false,

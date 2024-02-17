@@ -11,6 +11,7 @@ const sequelize = require("./config/config"); // Importa a instância do Sequeli
 const Usuario = require("./models/usuarios"); // Importa o modelo de usuários
 const Arquivo = require("./models/arquivos"); // Importa o modelo de arquivos
 const nodemailer = require("nodemailer");
+const Cob = require("./models/cob");
 
 const UsuarioController = require("./controllers/UsuarioController");
 const FilesController = require("./controllers/FilesController");

@@ -8,6 +8,7 @@ const multer = require("multer");
 const Efi = require("../config/Efi");
 
 const arquivosModel = require("../models/arquivos");
+const Cob = require("../models/cob");
 const fs = require("fs-extra");
 const { link } = require("fs");
 ///dff
@@ -333,15 +334,72 @@ async function MudarPlano(req, res) {
 
     const { plano } = req.body;
 
+    //gerar numero do pedido
+    const numeroPedido = uuidv4();
+    //30 dias em milissegundos
+    const moment = require("moment");
+
+    // Define a data e hora atual
+    const dataAtual = moment();
+
+    const base64QRCode = "";
+
+    // Adiciona 30 dias à data atual para calcular a data de expiração
+    const dataExpiracao = dataAtual.add(30, "days");
+
+    // Converte a data de expiração para um timestamp em milissegundos
+    const timestampExpiracaoMilissegundos = dataExpiracao.valueOf();
+
+    const QRCode = require("qrcode");
+
     if (plano === "1GB") {
-      
+      await Efi.criarPagamentoPix("19.99", numeroPedido).then((resposta) => {
+        Cob.create({
+          txid: resposta.txid,
+          email: usuario.email,
+          plano: "1GB",
+        });
+        const copia = resposta.pixCopiaECola;
+
+        QRCode.toDataURL(
+          copia,
+          {
+            color: {
+              dark: "#000000", // Pontos do QR Code
+              light: "#FFFFFF", // Fundo do QR Code
+            },
+          },
+          function (erro, url) {
+            if (erro) throw erro;
+            console.log("QR Code gerado em base64:");
+            base64QRCode = url;
+          }
+        );
+      });
+
+      res.status(200).send({
+        message: "Pague e tenha seus GB ativos em até 24 horas.",
+        qrCodeText: copia,
+        qrCodeImg: base64QRCode,
+      });
+
+      await transporter
+        .sendMail({
+          from: '"SERVER VDEV" <suv@viniciusdev.com.br>',
+          to: usuario.email,
+          subject: "Seu pedido de 5gb",
+          text: `Olá, ${usuario.nome}. Seu pedido de pagamento PIX foi criado com sucesso. O número do pedido é ${numeroPedido}., `,
+        })
+        .then(() => {
+          console.log("Email enviado com sucesso.");
+        })
+
+        .catch((error) => console.error("Erro ao criar pagamento PIX:", error));
     } else if (plano === "5GB") {
-      
     } else {
-      
     }
 
-    res.status(200).send({ message: "Plano alterado com sucesso." });
+    //res.status(200).send({ message: "Plano alterado com sucesso." });
   } catch (error) {
     console.error("Erro ao mudar o plano:", error);
     res.status(500).send({ error: "Erro ao mudar o plano" });
