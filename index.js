@@ -38,6 +38,7 @@ async function verificarCotas() {
 
       // Define o valor de 1GB em bytes
       const umGBEmBytes = 1024 ** 3;
+      console.log("umGBEmBytes", umGBEmBytes);
 
       // Verifica se o limite de armazenamento está configurado para 1GB
       if (usuario.storage === umGBEmBytes) {
@@ -54,7 +55,7 @@ async function verificarCotas() {
         }
       } else {
         console.log(
-          `O limite de armazenamento do usuário ${usuario.nome} não está configurado para 1GB.`
+          `O limite  ${usuario.nome} não está para 1GB.`
         );
       }
     }
