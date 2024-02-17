@@ -312,6 +312,16 @@ async function download(req, res) {
   }
 }
 
+const generateQR = async (text) => {
+  try {
+    const url = await QRCode.toDataURL(text);
+    return url; // Retorna a URL do QR Code gerado
+  } catch (err) {
+    console.error(err);
+    return null; // Retorna nulo em caso de erro
+  }
+};
+
 async function MudarPlano(req, res) {
   try {
     const authHeader = req.headers.authorization;
@@ -383,10 +393,12 @@ async function MudarPlano(req, res) {
           .catch((error) =>
             console.error("Erro ao criar pagamento PIX:", error)
           );
+
+        const qrCodeURL = generateQR(copia);
         res.status(200).send({
           message: "Pague e tenha seus GB ativos em até 24 horas.",
           qrCodeText: copia,
-          qrCodeImg: base64QRCode,
+          qrCodeImg: qrCodeURL,
         });
       });
     } else if (plano === "5GB") {
