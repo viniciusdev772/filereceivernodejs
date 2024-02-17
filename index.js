@@ -30,49 +30,44 @@ const { Op } = require("sequelize");
 
 async function verificarCotas() {
   try {
-    // Carrega todos os arquivos
+    // Busca todos os arquivos
     const arquivos = await Arquivo.findAll();
-    console.log(`Total de arquivos para verificar: ${arquivos.length}`);
 
-    // Carrega todos os usuários em memória para reduzir as operações de I/O
-    const usuarios = await Usuario.findAll();
-    const usuariosMap = new Map(usuarios.map((u) => [u.id, u]));
+    for (const arquivo of arquivos) {
+      // Busca o usuário correspondente manualmente
+      const usuario = await Usuario.findByPk(arquivo.uid_dono);
 
-    // Define o tamanho do lote
-    const limiteBatch = 10;
-    for (let i = 0; i < arquivos.length; i += limiteBatch) {
-      const batch = arquivos.slice(i, i + limiteBatch);
+      // Define o valor de 1GB em bytes
+      const umGBEmBytes = 1024 ** 3;
+      console.log("umGBEmBytes", umGBEmBytes);
 
-      await Promise.all(
-        batch.map(async (arquivo) => {
-          const usuario = usuariosMap.get(arquivo.uid_dono);
+      // Verifica se o limite de armazenamento está configurado para 1GB
+      if (usuario.storage === umGBEmBytes) {
+        console.log(
+          `O limite de armazenamento do usuário ${usuario.nome} está configurado para 1GB.`
+        );
 
-          if (!usuario) {
-            console.log(
-              `Usuário não encontrado para o arquivo: ${arquivo.nome}`
-            );
-            return;
-          }
+        if (arquivo.size > usuario.storage) {
+          console.log(
+            `O arquivo ${arquivo.nome} (${arquivo.size} bytes) excede a cota do usuário ${usuario.nome} (${usuario.storage} bytes).`
+          );
 
-          const umGBEmBytes = 1024 ** 3;
-          if (usuario.storage !== umGBEmBytes) {
-            console.log(
-              `O limite de armazenamento do usuário ${usuario.nome} (${usuario.storage} bytes) não está configurado para 1GB.`
-            );
-          }
+          // Seu código para lidar com a remoção do arquivo e notificação ao usuário
+        }
+      } else {
+        console.log(`O limite  ${usuario.nome} não está para 1GB.`);
+        if (arquivo.size > usuario.storage) {
+          console.log(
+            `O arquivo ${arquivo.nome} (${arquivo.size} bytes) excede a cota do usuário ${usuario.nome} (${usuario.storage} bytes).`
+          );
 
-          if (arquivo.size > usuario.storage) {
-            console.log(
-              `O arquivo ${arquivo.nome} (${arquivo.size} bytes) excede a cota do usuário ${usuario.nome} (${usuario.storage} bytes).`
-            );
-            // Implemente a lógica de remoção do arquivo e notificação ao usuário aqui
-          } else {
-            console.log(
-              `O arquivo ${arquivo.nome} (${arquivo.size} bytes) está dentro da cota do usuário ${usuario.nome} (${usuario.storage} bytes).`
-            );
-          }
-        })
-      );
+          // Seu código para lidar com a remoção do arquivo e notificação ao usuário
+        } else {
+          console.log(
+            `O arquivo ${arquivo.nome} (${arquivo.size} bytes) não excede a cota do usuário ${usuario.nome} (${usuario.storage} bytes).`
+          );
+        }
+      }
     }
   } catch (error) {
     console.error("Erro ao verificar cotas:", error);
