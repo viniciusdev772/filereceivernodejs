@@ -264,31 +264,38 @@ async function download(req, res) {
     // Recupera o token da URL
     const { token } = req.query;
 
-    console.log(token);
-
     // Busca no banco de dados pelo 'short' que corresponde ao token
     const arquivo = await arquivosModel.findOne({ where: { short: token } });
 
-    // Se um arquivo for encontrado
-    if (arquivo) {
-      // Recupera o caminho do arquivo
-      const caminho = arquivo.caminho;
-
-      // Faz o download do arquivo para o usuário
-      res.download(caminho, (err) => {
-        if (err) {
-          // Em caso de erro no download, envia uma resposta de erro
-          res.status(500).send("Erro ao fazer download do arquivo.");
-        }
-      });
-    } else {
-      // Se nenhum arquivo for encontrado, envia uma resposta de erro
-      res.status(404).send("Arquivo não encontrado.");
+    // Se nenhum arquivo for encontrado, envia uma resposta de erro
+    if (!arquivo) {
+      return res.status(404).send("Arquivo não encontrado.");
     }
+
+    // Recupera o caminho do arquivo
+    const caminho = arquivo.caminho;
+
+    // Faz o download do arquivo para o usuário
+    res.download(caminho, (err) => {
+      if (err) {
+        // Log do erro
+        console.error("Erro ao fazer download do arquivo:", err);
+        // Verifica se os cabeçalhos ainda não foram enviados para o cliente
+        if (!res.headersSent) {
+          // Em caso de erro no download, envia uma resposta de erro
+          return res.status(500).send("Erro ao fazer download do arquivo.");
+        }
+      }
+    });
   } catch (error) {
     console.error("Erro ao processar o download:", error);
-    // Em caso de erro na busca ou qualquer outro erro, envia uma resposta de erro genérico
-    res.status(500).send("Erro ao processar a solicitação de download.");
+    // Verifica se os cabeçalhos ainda não foram enviados para o cliente
+    if (!res.headersSent) {
+      // Em caso de erro na busca ou qualquer outro erro, envia uma resposta de erro genérico
+      return res
+        .status(500)
+        .send("Erro ao processar a solicitação de download.");
+    }
   }
 }
 
