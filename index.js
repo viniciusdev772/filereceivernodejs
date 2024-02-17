@@ -34,35 +34,28 @@ async function verificarCotas() {
 
     for (const arquivo of arquivos) {
       // Busca o usuário correspondente manualmente
-      const usuario = await Usuario.findByPk(arquivo.uid_dono); // Assumindo que `uid` é a chave para relacionar Arquivo e Usuario
+      const usuario = await Usuario.findByPk(arquivo.uid_dono);
 
-      if (usuario && arquivo.size > usuario.storage) {
+      // Define o valor de 1GB em bytes
+      const umGBEmBytes = 1024 ** 3;
+
+      // Verifica se o limite de armazenamento está configurado para 1GB
+      if (usuario.storage === umGBEmBytes) {
         console.log(
-          `O arquivo ${arquivo.nome} (${arquivo.size} bytes) excede a cota do usuário ${usuario.nome} (${usuario.storage} bytes).`
+          `O limite de armazenamento do usuário ${usuario.nome} está configurado para 1GB.`
         );
 
-        try {
-          // Apaga o arquivo usando fs-extra
-          //await fs.remove(arquivo.caminho);
-          //await Arquivo.destroy({ where: { uid: arquivo.uid } });
+        if (arquivo.size > usuario.storage) {
           console.log(
-            `Registro do arquivo ${arquivo.nome} removido com sucesso do banco de dados.`
+            `O arquivo ${arquivo.nome} (${arquivo.size} bytes) excede a cota do usuário ${usuario.nome} (${usuario.storage} bytes).`
           );
 
-          console.log(`Arquivo ${arquivo.nome} removido com sucesso.`);
-
-          // Envia um e-mail ao usuário informando sobre a situação
-          await transporter.sendMail({
-            from: "suv@viniciusdev.com.br",
-            to: usuario.email, // Certifique-se de que o modelo Usuario tenha um campo email
-            subject: "Cota de armazenamento excedida",
-            text: `Olá ${usuario.nome}, seu arquivo ${arquivo.nome} foi removido porque excedeu a cota de armazenamento permitida.`,
-          });
-
-          console.log(`E-mail enviado com sucesso ao usuário ${usuario.nome}.`);
-        } catch (error) {
-          console.error(`Erro ao remover arquivo ou enviar e-mail: ${error}`);
+          // Seu código para lidar com a remoção do arquivo e notificação ao usuário
         }
+      } else {
+        console.log(
+          `O limite de armazenamento do usuário ${usuario.nome} não está configurado para 1GB.`
+        );
       }
     }
   } catch (error) {
@@ -140,7 +133,7 @@ async function sincronizarBancoDeDados() {
   }
 }
 //cron.schedule("*/3 * * * *", verificarCotas);
-//verificarCotas();
+verificarCotas();
 sincronizarBancoDeDados();
 
 // Permita solicitações de diferentes origens
