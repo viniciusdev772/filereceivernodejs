@@ -26,6 +26,7 @@ async function apagar(req, res) {
 
     const decoded = await verificarToken(token);
     const { id } = req.body;
+    const fileId = id;
     const arquivo = await arquivosModel.findOne({
       where: {
         uid: id,
