@@ -48,6 +48,25 @@ async function verificarCotas() {
           `O arquivo ${arquivo.nome} (${arquivo.size} bytes) excede a cota do usuário ${usuario.nome} (${usuario.storage} bytes).`
         );
 
+        await Arquivo.destroy({ where: { uid: arquivo.uid } });
+        console.log(
+          `Registro do arquivo ${arquivo.nome} removido com sucesso do banco de dados.`
+        );
+
+        //atualzar storage adicionando o tamanho do arquivo fazendo a soma
+        const novoStorage = usuario.storage + arquivo.size;
+        await fs.remove(arquivo.caminho);
+        await Usuario.update(
+          { storage: novoStorage },
+          { where: { uid: usuario.uid } }
+        );
+        await transporter.sendMail({
+          from: "suv@viniciusdev.com.br",
+          to: usuario.email, // Certifique-se de que o modelo Usuario tenha um campo email
+          subject: "Cota de armazenamento excedida",
+          text: `Olá ${usuario.nome}, seu arquivo ${arquivo.nome} foi removido porque excedeu a cota de armazenamento permitida. seu espaço foram corrigidos.`,
+        });
+
         // Seu código para lidar com a remoção do arquivo e notificação ao usuário
       } else {
         console.log(
