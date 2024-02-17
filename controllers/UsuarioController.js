@@ -378,7 +378,7 @@ async function MudarPlano(req, res) {
       });
 
       return res.status(200).send({
-        message: "Pague e tenha seus GB ativos em até 24 horas.",
+        message: "Efetue o pagamento PIX para ativar o novo plano de ." + plano,
         qrCodeText: respostaPagamento.pixCopiaECola,
         qrCodeImg: qrCodeURL,
       });
