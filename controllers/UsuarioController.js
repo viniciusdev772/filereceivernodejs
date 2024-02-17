@@ -5,7 +5,8 @@ const crypto = require("crypto");
 const { v4: uuidv4 } = require("uuid");
 const multer = require("multer");
 
-const Efi = require("../config/Efi");
+//importar funcao de pagamento
+const criarPagamentoPix = require("../config/Efi");
 
 const arquivosModel = require("../models/arquivos");
 const Cob = require("../models/cob");
@@ -353,7 +354,7 @@ async function MudarPlano(req, res) {
     const QRCode = require("qrcode");
 
     if (plano === "1GB") {
-      await Efi.criarPagamentoPix("19.99", numeroPedido).then((resposta) => {
+      await criarPagamentoPix("19.99", numeroPedido).then((resposta) => {
         Cob.create({
           txid: resposta.txid,
           email: usuario.email,
