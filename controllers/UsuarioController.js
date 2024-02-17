@@ -47,7 +47,16 @@ async function handleUpload(req, res) {
 
     let decoded;
     try {
-      decoded = jwt.verify(authHeader, "seu_secret_jwt"); // Substitua 'suaChaveSecreta' pela sua chave secreta real
+      decoded = jwt.verify(authHeader, "seu_secret_jwt");
+      // Substitua 'suaChaveSecreta' pela sua chave secreta real
+      const usuario = await Usuario.findOne({ where: { uid: decoded.uid } });
+
+      // Verifica se o usuário tem espaço suficiente para o novo arquivo
+      if (usuario.storage < req.file.size) {
+        return res
+          .status(400)
+          .send({ error: "Espaço de armazenamento insuficiente." });
+      }
       const arquivo = await arquivosModel.create({
         size: req.file.size,
         nome: req.file.originalname,
@@ -56,7 +65,7 @@ async function handleUpload(req, res) {
       });
 
       //descontar o espaço de armazenamento do usuário
-      const usuario = await Usuario.findOne({ where: { uid: decoded.uid } });
+
       const novoStorage = usuario.storage - req.file.size;
       await usuario.update({ storage: novoStorage });
 
