@@ -36,3 +36,4 @@ async function criarPagamentoPix(valor, numeroPedido) {
 
 // Exemplo de como usar a função
 // Substitua '123.45' pelo valor desejado e 'NUMERO_DO_PEDIDO' pelo número do pedido do cliente
+module.exports = criarPagamentoPix;
