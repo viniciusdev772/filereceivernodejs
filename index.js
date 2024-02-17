@@ -168,6 +168,7 @@ app.get("/download", UsuarioController.download);
 
 app.get("/verificar-email", UsuarioController.verificarEmail);
 app.post("/delete_event", FilesController.apagar);
+app.post("/change_plan", UsuarioController.MudarPlano);
 
 app.post(
   "/upload_event",

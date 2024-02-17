@@ -5,6 +5,8 @@ const crypto = require("crypto");
 const { v4: uuidv4 } = require("uuid");
 const multer = require("multer");
 
+const Efi = require("../config/Efi");
+
 const arquivosModel = require("../models/arquivos");
 const fs = require("fs-extra");
 const { link } = require("fs");
@@ -308,8 +310,47 @@ async function download(req, res) {
   }
 }
 
+async function MudarPlano(req, res) {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).send({ error: "Nenhum token fornecido." });
+    }
+
+    let decoded;
+    try {
+      // Substitua 'seu_secret_jwt' pela sua chave secreta real
+      decoded = jwt.verify(authHeader, "seu_secret_jwt");
+    } catch (error) {
+      return res.status(401).send({ error: "Token inválido." });
+    }
+
+    const usuario = await Usuario.findOne({ where: { uid: decoded.uid } });
+
+    if (!usuario) {
+      return res.status(404).send({ error: "Usuário não encontrado." });
+    }
+
+    const { plano } = req.body;
+
+    if (plano === "1GB") {
+      
+    } else if (plano === "5GB") {
+      
+    } else {
+      
+    }
+
+    res.status(200).send({ message: "Plano alterado com sucesso." });
+  } catch (error) {
+    console.error("Erro ao mudar o plano:", error);
+    res.status(500).send({ error: "Erro ao mudar o plano" });
+  }
+}
+
 module.exports = {
   criarUsuario,
+  MudarPlano,
   download,
   verificarEmail,
   fazerLogin,

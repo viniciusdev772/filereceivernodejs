@@ -14,11 +14,13 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "fs-extra": "^11.2.0",
+    "gn-api-sdk-node": "^3.0.4",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.9.1",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.9",
+    "sdk-node-apis-efi": "^1.1.0",
     "sequelize": "^6.37.0",
     "uuid": "^9.0.1"
   }
