@@ -11,6 +11,7 @@ const criarPagamentoPix = require("../config/Efi");
 const arquivosModel = require("../models/arquivos");
 const Cob = require("../models/cob");
 const fs = require("fs-extra");
+const QRCode = require("qrcode");
 const { link } = require("fs");
 ///dff
 const storage = multer.diskStorage({
