@@ -61,6 +61,10 @@ async function verificarCotas() {
           );
 
           // Seu código para lidar com a remoção do arquivo e notificação ao usuário
+        } else {
+          console.log(
+            `O arquivo ${arquivo.nome} (${arquivo.size} bytes) não excede a cota do usuário ${usuario.nome} (${usuario.storage} bytes).`
+          );
         }
       }
     }
