@@ -20,6 +20,8 @@ if [ "$alteracoes" != "Already up to date." ]; then
     # Deleta somente o chat server do PM2
     pm2 delete "CDN SERVER"
 
+    npx sequelize-cli db:migrate --config=config/meuArquivoDeConfiguracao.js
+
     # Inicia o chat server com PM2
     pm2 start --name "CDN SERVER" index.js -i max
     pm2 save

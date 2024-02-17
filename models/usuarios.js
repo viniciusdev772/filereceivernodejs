@@ -13,6 +13,11 @@ Usuario.init(
       defaultValue: () => uuidv4(),
       primaryKey: true,
     },
+    planos: {
+      type: DataTypes.STRING,
+      defaultValue: "free",
+      allowNull: true,
+    },
     storage: {
       type: DataTypes.STRING,
       defaultValue: "1073741824",
