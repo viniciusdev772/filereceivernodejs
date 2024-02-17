@@ -46,6 +46,13 @@ async function apagar(req, res) {
     });
 
     await fs.remove(arquivo.caminho);
+    //atualizar storage do usuario
+    const usuario = await Usuario.findByPk(decoded.uid);
+    const novoStorage = usuario.storage + arquivo.size;
+    await Usuario.update(
+      { storage: novoStorage },
+      { where: { uid: decoded.uid } }
+    );
     return res.status(200).json({ mensagem: "Arquivo removido com sucesso" });
   } catch (erro) {
     if (erro === "Token inválido") {
