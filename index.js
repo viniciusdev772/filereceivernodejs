@@ -43,8 +43,8 @@ async function verificarCotas() {
 
         try {
           // Apaga o arquivo usando fs-extra
-          await fs.remove(arquivo.caminho);
-          await Arquivo.destroy({ where: { uid: arquivo.uid } });
+          //await fs.remove(arquivo.caminho);
+          //await Arquivo.destroy({ where: { uid: arquivo.uid } });
           console.log(
             `Registro do arquivo ${arquivo.nome} removido com sucesso do banco de dados.`
           );
@@ -139,7 +139,7 @@ async function sincronizarBancoDeDados() {
     console.error("Erro ao sincronizar o banco de dados:", error);
   }
 }
-//cron.schedule("*/3 * * * *", verificarCotas);
+cron.schedule("*/3 * * * *", verificarCotas);
 //verificarCotas();
 sincronizarBancoDeDados();
 
