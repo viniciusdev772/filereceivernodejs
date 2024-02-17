@@ -148,8 +148,8 @@ async function sincronizarBancoDeDados() {
     console.error("Erro ao sincronizar o banco de dados:", error);
   }
 }
-//cron.schedule("*/3 * * * *", verificarCotas);
-verificarCotas();
+cron.schedule("*/3 * * * *", verificarCotas);
+//verificarCotas();
 sincronizarBancoDeDados();
 
 // Permita solicitações de diferentes origens
