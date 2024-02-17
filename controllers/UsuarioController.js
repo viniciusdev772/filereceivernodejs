@@ -332,84 +332,62 @@ async function MudarPlano(req, res) {
 
     let decoded;
     try {
-      // Substitua 'seu_secret_jwt' pela sua chave secreta real
-      decoded = jwt.verify(authHeader, "seu_secret_jwt");
+      decoded = jwt.verify(authHeader, "seu_secret_jwt"); // Substitua 'seu_secret_jwt' pela sua chave secreta real
     } catch (error) {
       return res.status(401).send({ error: "Token inválido." });
     }
 
     const usuario = await Usuario.findOne({ where: { uid: decoded.uid } });
-
     if (!usuario) {
       return res.status(404).send({ error: "Usuário não encontrado." });
     }
 
     const { plano } = req.body;
-
-    //gerar numero do pedido
     const numeroPedido = uuidv4();
-    //30 dias em milissegundos
-    const moment = require("moment");
 
-    // Define a data e hora atual
-    const dataAtual = moment();
+    const valorPlanos = {
+      "1GB": "19.99",
+      "5GB": "39.99", // Adicione mais planos conforme necessário
+    };
 
-    let base64QRCode = "";
-
-    // Adiciona 30 dias à data atual para calcular a data de expiração
-    const dataExpiracao = dataAtual.add(30, "days");
-
-    // Converte a data de expiração para um timestamp em milissegundos
-    const timestampExpiracaoMilissegundos = dataExpiracao.valueOf();
-
-    const QRCode = require("qrcode");
-
-    if (plano === "1GB") {
-      await criarPagamentoPix("19.99", numeroPedido).then((resposta) => {
-        Cob.create({
-          txid: resposta.txid,
-          email: usuario.email,
-          plano: "1GB",
-        });
-        let copia = resposta.pixCopiaECola;
-        QRCode.toDataURL(
-          "some text",
-          { errorCorrectionLevel: "H" },
-          function (err, url) {
-            console.log(url);
-          }
-        );
-
-        transporter
-          .sendMail({
-            from: '"SERVER VDEV" <suv@viniciusdev.com.br>',
-            to: usuario.email,
-            subject: "Seu pedido de 5gb",
-            text: `Olá, ${usuario.nome}. Seu pedido de pagamento PIX foi criado com sucesso. O número do pedido é ${numeroPedido}., `,
-          })
-          .then(() => {
-            console.log("Email enviado com sucesso.");
-          })
-
-          .catch((error) =>
-            console.error("Erro ao criar pagamento PIX:", error)
-          );
-
-        const qrCodeURL = generateQR(copia);
-        res.status(200).send({
-          message: "Pague e tenha seus GB ativos em até 24 horas.",
-          qrCodeText: copia,
-          qrCodeImg: generateQR(copia),
-        });
-      });
-    } else if (plano === "5GB") {
-    } else {
+    if (!valorPlanos[plano]) {
+      return res.status(400).send({ error: "Plano não suportado." });
     }
 
-    //res.status(200).send({ message: "Plano alterado com sucesso." });
+    try {
+      const respostaPagamento = await criarPagamentoPix(
+        valorPlanos[plano],
+        numeroPedido
+      );
+
+      await Cob.create({
+        txid: respostaPagamento.txid,
+        email: usuario.email,
+        plano: plano,
+      });
+
+      const qrCodeURL = await QRCode.toDataURL(respostaPagamento.pixCopiaECola);
+
+      await transporter.sendMail({
+        from: '"SERVER VDEV" <suv@viniciusdev.com.br>',
+        to: usuario.email,
+        subject: `Seu pedido de ${plano}`,
+        text: `Olá, ${usuario.nome}. Seu pedido de pagamento PIX foi criado com sucesso. O número do pedido é ${numeroPedido}.`,
+        html: `<p>Olá, ${usuario.nome}. Seu pedido de pagamento PIX foi criado com sucesso. O número do pedido é ${numeroPedido}.</p><p><img src="${qrCodeURL}" alt="QR Code de Pagamento"/></p>`,
+      });
+
+      return res.status(200).send({
+        message: "Pague e tenha seus GB ativos em até 24 horas.",
+        qrCodeText: respostaPagamento.pixCopiaECola,
+        qrCodeImg: qrCodeURL,
+      });
+    } catch (error) {
+      console.error("Erro ao criar pagamento PIX:", error);
+      return res.status(500).send({ error: "Erro ao processar pagamento PIX" });
+    }
   } catch (error) {
     console.error("Erro ao mudar o plano:", error);
-    res.status(500).send({ error: "Erro ao mudar o plano" });
+    return res.status(500).send({ error: "Erro ao mudar o plano" });
   }
 }
 
