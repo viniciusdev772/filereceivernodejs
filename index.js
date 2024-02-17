@@ -15,8 +15,6 @@ const nodemailer = require("nodemailer");
 const UsuarioController = require("./controllers/UsuarioController");
 const FilesController = require("./controllers/FilesController");
 
-app.post("/delete_event", FilesController.apagar);
-
 const cron = require("node-cron");
 const transporter = nodemailer.createTransport({
   host: "mail.viniciusdev.com.br",
@@ -169,6 +167,7 @@ app.post("/dashboard", UsuarioController.dashboard);
 app.get("/download", UsuarioController.download);
 
 app.get("/verificar-email", UsuarioController.verificarEmail);
+app.post("/delete_event", FilesController.apagar);
 
 app.post(
   "/upload_event",
