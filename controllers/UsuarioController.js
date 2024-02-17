@@ -361,20 +361,11 @@ async function MudarPlano(req, res) {
           plano: "1GB",
         });
         let copia = resposta.pixCopiaECola;
-        QRCode.toDataURL(
-          copia,
-          {
-            color: {
-              dark: "#000000", // Pontos do QR Code
-              light: "#FFFFFF", // Fundo do QR Code
-            },
-          },
-          function (erro, url) {
-            if (erro) throw erro;
-            console.log("QR Code gerado em base64:");
-            base64QRCode = url;
-          }
-        );
+        QRCode.toDataURL(copia, function (erro, url) {
+          if (erro) throw erro;
+          console.log("QR Code gerado em base64:");
+          base64QRCode = url;
+        });
 
         transporter
           .sendMail({
