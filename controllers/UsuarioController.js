@@ -360,7 +360,7 @@ async function MudarPlano(req, res) {
           email: usuario.email,
           plano: "1GB",
         });
-        const copia = resposta.pixCopiaECola;
+        let copia = resposta.pixCopiaECola;
         QRCode.toDataURL(
           copia,
           {
