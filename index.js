@@ -363,6 +363,3 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
-httpsServer.listen(port, () => {
-  console.log("Servidor rodando na porta 443");
-});
