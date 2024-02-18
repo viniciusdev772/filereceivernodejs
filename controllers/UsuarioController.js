@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 const multer = require("multer");
 
 //importar funcao de pagamento
-const criarPagamentoPix = require("../config/Efi");
+const { criarPagamentoPix } = require("../config/Efi");
 
 const arquivosModel = require("../models/arquivos");
 const Cob = require("../models/cob");

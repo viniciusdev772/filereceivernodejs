@@ -353,7 +353,7 @@ function gbParaBytes(gb) {
   return gb * 1024 ** 3; // 1024^3 bytes em um gigabyte
 }
 
-const verificarPix = require("./config/Efi");
+const { verificarPix } = require("./config/Efi");
 async function ListarCobrancas() {
   const cobrancas = await Cob.findAll();
   for (const cobranca of cobrancas) {
