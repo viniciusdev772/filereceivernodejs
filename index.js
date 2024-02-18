@@ -17,6 +17,20 @@ const UsuarioController = require("./controllers/UsuarioController");
 const FilesController = require("./controllers/FilesController");
 
 const cron = require("node-cron");
+
+const httpsOptions = {
+  cert: fs.readFileSync(
+    "/etc/letsencrypt/live/cdn.viniciusdev.com.br/fullchain.pem"
+  ),
+  key: fs.readFileSync(
+    "/etc/letsencrypt/live/cdn.viniciusdev.com.br/privkey.pem"
+  ),
+  ca: fs.readFileSync("./chain-pix-prod.crt"), // Certificado intermediário da Efí
+  minVersion: "TLSv1.2",
+  requestCert: true,
+  rejectUnauthorized: true,
+};
+
 const transporter = nodemailer.createTransport({
   host: "mail.viniciusdev.com.br",
   port: 587,
@@ -177,8 +191,21 @@ app.post(
   UsuarioController.handleUpload
 );
 
+app.post("/webhook", (request, response) => {
+  // Verifica se a requisição que chegou nesse endpoint foi autorizada
+  if (request.socket.authorized) {
+    response.status(200).end();
+  } else {
+    response.status(401).end();
+  }
+});
+
 // Configura o Express para servir arquivos estáticos da pasta 'uploads'
 app.use("/uploads", express.static("uploads"));
+
+const https = require("https");
+
+const httpsServer = https.createServer(httpsOptions, app);
 
 const allowedExtensions = [
   "png",
@@ -342,6 +369,6 @@ app.use((err, req, res, next) => {
   }
 });
 
-app.listen(port, () => {
+httpsServer.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
