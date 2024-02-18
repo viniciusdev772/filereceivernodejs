@@ -20,19 +20,6 @@ const FilesController = require("./controllers/FilesController");
 
 const cron = require("node-cron");
 
-const httpsOptions = {
-  cert: fs.readFileSync(
-    "/etc/letsencrypt/live/cdn.viniciusdev.com.br/fullchain.pem"
-  ),
-  key: fs.readFileSync(
-    "/etc/letsencrypt/live/cdn.viniciusdev.com.br/privkey.pem"
-  ),
-  ca: fs.readFileSync("./chain-pix-prod.crt"), // Certificado intermediário da Efí
-  minVersion: "TLSv1.2",
-  requestCert: true,
-  rejectUnauthorized: true,
-};
-
 const transporter = nodemailer.createTransport({
   host: "mail.viniciusdev.com.br",
   port: 587,
@@ -199,8 +186,6 @@ app.post(
 app.use("/uploads", express.static("uploads"));
 
 const https = require("https");
-
-const httpsServer = https.createServer(httpsOptions, app);
 
 const allowedExtensions = [
   "png",
