@@ -387,6 +387,8 @@ console.log(statusDaAssinatura);
 const { verificarPix } = require("./config/Efi");
 const math = require("mathjs");
 
+const math = require("mathjs");
+
 async function ListarCobrancas() {
   const cobrancas = await Cob.findAll();
   for (const cobranca of cobrancas) {
@@ -396,7 +398,7 @@ async function ListarCobrancas() {
         const usuario = await Usuario.findOne({
           where: { email: cobranca.email },
         });
-        // A conversão para inteiro é tratada pela mathjs quando necessário
+
         let gbAdicional = 0;
 
         switch (cobranca.plano) {
@@ -411,19 +413,28 @@ async function ListarCobrancas() {
             break;
         }
 
-        // A mathjs lida com a conversão e cálculo
-        const storageInicial = math.bignumber(usuario.storage); // Trata o storage como um número grande
+        const storageInicial = math.bignumber(usuario.storage);
 
-        const bytesAdicionais = math.multiply(gbAdicional, math.pow(1024, 3)); // Converte GB em bytes
+        const bytesAdicionais = math.multiply(gbAdicional, math.pow(1024, 3));
         const novoStorage = math.add(storageInicial, bytesAdicionais);
 
-        await Usuario.update(
-          {
-            storage: novoStorage.toString(), // Converte o resultado para string para armazenamento
-            expira_em: calcularExpiracaoEmMilissegundos(),
-          },
-          { where: { email: cobranca.email } }
-        );
+        // Certifica-se de que o valor convertido para string está dentro do limite VARCHAR(255)
+        const novoStorageStr = novoStorage.toString();
+
+        if (novoStorageStr.length > 255) {
+          console.error(
+            "O valor do novo armazenamento excede o limite de caracteres permitido pelo banco de dados."
+          );
+          // Tratar o erro conforme necessário
+        } else {
+          await Usuario.update(
+            {
+              storage: novoStorageStr,
+              expira_em: calcularExpiracaoEmMilissegundos(),
+            },
+            { where: { email: cobranca.email } }
+          );
+        }
 
         await Cob.destroy({ where: { uid: cobranca.uid } });
       }
