@@ -5,6 +5,9 @@ const crypto = require("crypto");
 const { v4: uuidv4 } = require("uuid");
 const multer = require("multer");
 
+const moment = require("moment");
+require("moment-timezone");
+
 //importar funcao de pagamento
 const { criarPagamentoPix } = require("../config/Efi");
 
@@ -110,6 +113,23 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+function formatarExpiracaoLogin(milissegundosExpiracao) {
+  const agora = moment().tz("America/Sao_Paulo");
+  const expiracao = moment(milissegundosExpiracao).tz("America/Sao_Paulo");
+  const diferenca = moment.duration(expiracao.diff(agora));
+
+  if (diferenca.asMilliseconds() <= 0) {
+    return "Seu login já expirou.";
+  }
+
+  const dias = diferenca.days();
+  const horas = diferenca.hours();
+  const minutos = diferenca.minutes();
+  const segundos = diferenca.seconds();
+
+  return `Seu login expira em ${dias} dia(s), ${horas} hora(s), ${minutos} minuto(s) e ${segundos} segundo(s).`;
+}
+
 async function fazerLogin(req, res) {
   try {
     const { email, senha } = req.body;
@@ -144,7 +164,12 @@ async function fazerLogin(req, res) {
         expiresIn: "7d",
       }
     );
+    const expiracao = "";
 
+    if (usuario.planos == "free") {
+    } else {
+      expiracao = formatarExpiracaoLogin(usuario.expira_em);
+    }
     // Retorna o token ao usuário
     res.status(200).json({
       message: "Login realizado com sucesso",
@@ -153,6 +178,7 @@ async function fazerLogin(req, res) {
       nome: usuario.nome,
       storage: usuario.storage,
       plano: usuario.planos,
+      expiracao: expiracao,
       token,
     });
   } catch (error) {
