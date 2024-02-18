@@ -385,6 +385,8 @@ const statusDaAssinatura = verificarExpiracaoAssinatura(
 console.log(statusDaAssinatura);
 
 const { verificarPix } = require("./config/Efi");
+const math = require("mathjs");
+
 async function ListarCobrancas() {
   const cobrancas = await Cob.findAll();
   for (const cobranca of cobrancas) {
@@ -394,8 +396,7 @@ async function ListarCobrancas() {
         const usuario = await Usuario.findOne({
           where: { email: cobranca.email },
         });
-        const storageAtual = parseInt(usuario.storage, 10); // Garantindo que seja um inteiro
-        let storageAdicional = 0;
+        // A conversão para inteiro é tratada pela mathjs quando necessário
         let gbAdicional = 0;
 
         switch (cobranca.plano) {
@@ -410,15 +411,15 @@ async function ListarCobrancas() {
             break;
         }
 
-        // Certifica-se de que storageAdicional também é tratado como um inteiro, se necessário
-        const storageInicial = parseInt(usuario.storage); // 1GB em bytes
+        // A mathjs lida com a conversão e cálculo
+        const storageInicial = math.bignumber(usuario.storage); // Trata o storage como um número grande
 
-        const bytesAdicionais = gbAdicional * 1024 * 1024 * 1024; // Converte GB em bytes
-        const novoStorage = storageInicial + bytesAdicionais;
+        const bytesAdicionais = math.multiply(gbAdicional, math.pow(1024, 3)); // Converte GB em bytes
+        const novoStorage = math.add(storageInicial, bytesAdicionais);
 
         await Usuario.update(
           {
-            storage: novoStorage,
+            storage: novoStorage.toString(), // Converte o resultado para string para armazenamento
             expira_em: calcularExpiracaoEmMilissegundos(),
           },
           { where: { email: cobranca.email } }
