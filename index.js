@@ -387,8 +387,6 @@ console.log(statusDaAssinatura);
 const { verificarPix } = require("./config/Efi");
 const math = require("mathjs");
 
-const math = require("mathjs");
-
 async function ListarCobrancas() {
   const cobrancas = await Cob.findAll();
   for (const cobranca of cobrancas) {
