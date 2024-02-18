@@ -369,6 +369,6 @@ app.use((err, req, res, next) => {
   }
 });
 
-httpsServer.listen(port, () => {
-  console.log(`Servidor rodando na porta ${port}`);
+https.createServer(httpsOptions, app).listen(3002, () => {
+  console.log("Servidor Express com HTTPS rodando na porta 443");
 });
