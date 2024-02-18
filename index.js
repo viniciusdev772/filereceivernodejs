@@ -359,6 +359,6 @@ app.use((err, req, res, next) => {
     next();
   }
 });
-app.listen(port, () => {
-  console.log(`Servidor Express rodando na porta ${port}`);
+https.createServer(httpsOptions, app).listen(3002, () => {
+  console.log("Servidor Express com mTLS rodando na porta 3002");
 });
