@@ -40,10 +40,13 @@ const upload = multer({ storage: storage });
 const uploadEvent = upload.single("arquivo");
 
 function formatarExpiracaoLogin(milissegundosExpiracao) {
-  const agora = moment().tz("America/Sao_Paulo");
-  // Correção: Garantir que o valor em milissegundos seja corretamente interpretado
-  const expiracao = moment(milissegundosExpiracao).tz("America/Sao_Paulo");
+  if (!milissegundosExpiracao) {
+    return "Informação de expiração não disponível.";
+  }
 
+  // Certifica-se de que está tratando o valor como milissegundos
+  const agora = moment().tz("America/Sao_Paulo");
+  const expiracao = moment(milissegundosExpiracao).tz("America/Sao_Paulo");
   const diferenca = moment.duration(expiracao.diff(agora));
 
   if (diferenca.asMilliseconds() <= 0) {
@@ -55,7 +58,7 @@ function formatarExpiracaoLogin(milissegundosExpiracao) {
   const minutos = diferenca.minutes();
   const segundos = diferenca.seconds();
 
-  return `Seu login expira em ${dias} dia(s), ${horas} hora(s), ${minutos} minuto(s) e ${segundos} segundo(s).`;
+  return ` ${dias} dia(s), ${horas} hora(s), ${minutos} minuto(s) e ${segundos} segundo(s).`;
 }
 
 async function handleUpload(req, res) {
