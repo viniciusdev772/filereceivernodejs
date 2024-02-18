@@ -351,7 +351,7 @@ app.use((err, req, res, next) => {
 });
 
 function gbParaBytes(gb) {
-  return gb * 1024 ** 3; // 1024^3 bytes em um gigabyte
+  return gb * 1024 * 1024 * 1024; // GB * MB * KB * Bytes
 }
 function calcularExpiracaoEmMilissegundos() {
   // Obtém a data atual
@@ -410,12 +410,12 @@ async function ListarCobrancas() {
         }
 
         // Certifica-se de que storageAdicional também é tratado como um inteiro, se necessário
-        storageAdicional = parseInt(storageAdicional, 10);
+        const novoStorage = storageAtual + storageAdicional;
 
         if (storageAdicional > 0) {
           await Usuario.update(
             {
-              storage: storageAdicional + storageAtual,
+              storage: novoStorage,
               expira_em: calcularExpiracaoEmMilissegundos(),
             },
             { where: { email: cobranca.email } }
