@@ -166,12 +166,7 @@ async function fazerLogin(req, res) {
         expiresIn: "7d",
       }
     );
-    const expiracao = "";
 
-    if (usuario.planos == "free") {
-    } else {
-      expiracao = formatarExpiracaoLogin(usuario.expira_em);
-    }
     // Retorna o token ao usuário
     res.status(200).json({
       message: "Login realizado com sucesso",
@@ -180,7 +175,6 @@ async function fazerLogin(req, res) {
       nome: usuario.nome,
       storage: usuario.storage,
       plano: usuario.planos,
-      expiracao: expiracao,
       token,
     });
   } catch (error) {
@@ -279,9 +273,8 @@ async function dashboard(req, res) {
     // Calcula o espaço disponível
     const espacoDisponivel = espaco.storage;
 
-    const expiracao88 = "";
-    if (espaco.planos == "free") {
-    } else {
+    let expiracao88 = "";
+    if (espaco.planos !== "free") {
       expiracao88 = formatarExpiracaoLogin(espaco.expira_em);
     }
 
