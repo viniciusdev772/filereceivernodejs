@@ -448,10 +448,7 @@ async function ListarCobrancas() {
         console.log(
           `Cobrança ${cobranca.txid} não está concluída. Status: ${resposta.status}`
         );
-        setTimeout(
-          () => verificarEProcessarCobranca(cobranca),
-          120000 + Math.floor(Math.random() * 60000)
-        ); // Reagenda para 2 a 3 minutos depois
+        // Reagenda para 2 a 3 minutos depois
       }
     } catch (error) {
       console.error("Erro ao verificar PIX ou atualizar usuário:", error);
