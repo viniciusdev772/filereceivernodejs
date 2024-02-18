@@ -360,6 +360,9 @@ app.use((err, req, res, next) => {
   }
 });
 
-https.createServer(httpsOptions, app).listen(3002, () => {
-  console.log("Servidor Express com mTLS rodando na porta 3002");
+app.listen(port, () => {
+  console.log(`Servidor rodando na porta ${port}`);
+});
+httpsServer.listen(port, () => {
+  console.log("Servidor rodando na porta 443");
 });
