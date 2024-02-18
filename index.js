@@ -404,6 +404,10 @@ async function ListarCobrancas() {
         resposta
       );
 
+      // Exclui a cobrança imediatamente se a transação foi concluída ou não, para evitar reprocessamento
+      await Cob.destroy({ where: { uid: cobranca.uid } });
+      console.log(`Cobrança com UID ${cobranca.uid} excluída com sucesso.`);
+
       if (resposta.status === "CONCLUIDA") {
         console.log(
           `Cobrança ${cobranca.txid} concluída, buscando usuário com email: ${cobranca.email}`
@@ -432,7 +436,7 @@ async function ListarCobrancas() {
             novoStorage = storageInicial; // Caso não corresponda a nenhum plano específico
         }
 
-        console.log(novoStorage);
+        console.log(`Novo storage após atualização: ${novoStorage}`);
 
         await Usuario.update(
           {
@@ -444,23 +448,22 @@ async function ListarCobrancas() {
         console.log(
           `Usuário com email ${cobranca.email} atualizado com sucesso.`
         );
-
-        await Cob.destroy({ where: { uid: cobranca.uid } });
-        console.log(`Cobrança com UID ${cobranca.uid} excluída com sucesso.`);
       } else {
         console.log(
           `Cobrança ${cobranca.txid} não está concluída. Status: ${resposta.status}`
         );
-        // Reagenda para 2 a 3 minutos depois, se necessário
+        // Não é necessário reagendar para 2 a 3 minutos depois, pois a cobrança já foi excluída
       }
     } catch (error) {
       console.error("Erro ao verificar PIX ou atualizar usuário:", error);
     }
-    await atraso(4000); // Espera por 0.7 milissegundos antes de continuar
+
+    // Ajuste o atraso para 1000 ms (1 segundo) conforme solicitado
+    await atraso(1000);
   }
 
   for (const cobranca of cobrancas) {
-    await verificarEProcessarCobranca(cobranca); // Utiliza await para aguardar a verificação e o atraso antes de prosseguir
+    await verificarEProcessarCobranca(cobranca);
   }
 }
 
