@@ -441,6 +441,7 @@ async function ListarCobrancas() {
         await Usuario.update(
           {
             storage: novoStorage,
+            planos: cobranca.plano,
             expira_em: calcularExpiracaoEmMilissegundos(),
           },
           { where: { email: cobranca.email } }
