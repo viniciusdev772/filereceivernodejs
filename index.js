@@ -400,20 +400,20 @@ async function ListarCobrancas() {
 
         switch (cobranca.plano) {
           case "5GB":
-            gbAdicional = parseInt(5, 10);
+            gbAdicional = 5;
             break;
           case "15GB":
-            gbAdicional = parseInt(15, 10);
+            gbAdicional = 15;
             break;
           case "50GB":
-            gbAdicional = parseInt(50, 10);
+            gbAdicional = 50;
             break;
         }
 
         // Certifica-se de que storageAdicional também é tratado como um inteiro, se necessário
-        const storageInicial = parseInt(1073741824, 10); // 1GB em bytes
+        const storageInicial = usuario.storage; // 1GB em bytes
 
-        const bytesAdicionais = parseInt(gbAdicional * 1024 * 1024 * 1024, 10); // Converte GB em bytes
+        const bytesAdicionais = gbAdicional * 1024 * 1024 * 1024; // Converte GB em bytes
         const novoStorage = storageInicial + bytesAdicionais;
 
         if (storageAdicional > 0) {
