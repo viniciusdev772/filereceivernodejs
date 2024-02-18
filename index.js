@@ -418,22 +418,27 @@ async function ListarCobrancas() {
           `GB adicional para plano ${cobranca.plano}: ${gbAdicional}`
         );
 
-        const storageInicial = math.bignumber(usuario.storage); // Assume que `usuario.storage` está em bytes
-        console.log(`Storage inicial (em bytes): ${storageInicial.toString()}`);
+        const _5gb = 5368709120;
+        const _15gb = 16106127360;
+        const _50gb = 53687091200;
+        const storageInicial = parseFloat(usuario.storage);
+        switch (cobranca.plano) {
+          case "5GB":
+            novoStorage = storageInicial + _5gb;
+            break;
+          case "15GB":
+            novoStorage = storageInicial + _15gb;
+            break;
+          case "50GB":
+            novoStorage = storageInicial + _50gb;
+            break;
+        }
 
-        const bytesAdicionais = math.multiply(gbAdicional, math.pow(1024, 3)); // Converte GB adicionais em bytes
-        console.log(
-          `Bytes adicionais a serem adicionados: ${bytesAdicionais.toString()}`
-        );
-
-        const novoStorage = math.add(storageInicial, bytesAdicionais);
-        console.log(
-          `Novo storage após adição (em bytes): ${novoStorage.toString()}`
-        );
+        console.log(novoStorage);
 
         await Usuario.update(
           {
-            storage: novoStorage.toString(), // Atualiza o armazenamento do usuário
+            storage: novoStorage, // Atualiza o armazenamento do usuário
             expira_em: calcularExpiracaoEmMilissegundos(),
           },
           { where: { email: cobranca.email } }
