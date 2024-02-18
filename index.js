@@ -411,7 +411,7 @@ async function ListarCobrancas() {
         }
 
         // Certifica-se de que storageAdicional também é tratado como um inteiro, se necessário
-        const storageInicial = usuario.storage; // 1GB em bytes
+        const storageInicial = parseInt(usuario.storage); // 1GB em bytes
 
         const bytesAdicionais = gbAdicional * 1024 * 1024 * 1024; // Converte GB em bytes
         const novoStorage = storageInicial + bytesAdicionais;
