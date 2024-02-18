@@ -393,7 +393,7 @@ async function ListarCobrancas() {
   const cobrancas = await Cob.findAll();
   console.log(`Total de cobranças encontradas: ${cobrancas.length}`);
 
-  for (const cobranca of cobrancas) {
+  async function verificarEProcessarCobranca(cobranca) {
     console.log(`Processando cobrança com txid: ${cobranca.txid}`);
     try {
       const resposta = await verificarPix(cobranca.txid);
@@ -403,6 +403,7 @@ async function ListarCobrancas() {
       );
 
       if (resposta.status === "CONCLUIDA") {
+        await Cob.destroy({ where: { uid: cobranca.uid } });
         console.log(
           `Cobrança ${cobranca.txid} concluída, buscando usuário com email: ${cobranca.email}`
         );
@@ -412,11 +413,7 @@ async function ListarCobrancas() {
         console.log(`Usuário encontrado:`, usuario);
 
         const gbAdicional =
-          {
-            "5GB": 5,
-            "15GB": 15,
-            "50GB": 50,
-          }[cobranca.plano] || 0;
+          { "5GB": 5, "15GB": 15, "50GB": 50 }[cobranca.plano] || 0;
         console.log(
           `GB adicional para plano ${cobranca.plano}: ${gbAdicional}`
         );
@@ -451,10 +448,18 @@ async function ListarCobrancas() {
         console.log(
           `Cobrança ${cobranca.txid} não está concluída. Status: ${resposta.status}`
         );
+        setTimeout(
+          () => verificarEProcessarCobranca(cobranca),
+          120000 + Math.floor(Math.random() * 60000)
+        ); // Reagenda para 2 a 3 minutos depois
       }
     } catch (error) {
       console.error("Erro ao verificar PIX ou atualizar usuário:", error);
     }
+  }
+
+  for (const cobranca of cobrancas) {
+    verificarEProcessarCobranca(cobranca); // Removido await para não bloquear o loop
   }
 }
 
