@@ -39,6 +39,23 @@ const upload = multer({ storage: storage });
 
 const uploadEvent = upload.single("arquivo");
 
+function formatarExpiracaoLogin(milissegundosExpiracao) {
+  const agora = moment().tz("America/Sao_Paulo");
+  const expiracao = moment(milissegundosExpiracao).tz("America/Sao_Paulo");
+  const diferenca = moment.duration(expiracao.diff(agora));
+
+  if (diferenca.asMilliseconds() <= 0) {
+    return "Seu login já expirou.";
+  }
+
+  const dias = diferenca.days();
+  const horas = diferenca.hours();
+  const minutos = diferenca.minutes();
+  const segundos = diferenca.seconds();
+
+  return `Seu login expira em ${dias} dia(s), ${horas} hora(s), ${minutos} minuto(s) e ${segundos} segundo(s).`;
+}
+
 async function handleUpload(req, res) {
   try {
     // Acessa o cabeçalho Authorization
@@ -112,23 +129,6 @@ const transporter = nodemailer.createTransport({
     pass: "9778",
   },
 });
-
-function formatarExpiracaoLogin(milissegundosExpiracao) {
-  const agora = moment().tz("America/Sao_Paulo");
-  const expiracao = moment(milissegundosExpiracao).tz("America/Sao_Paulo");
-  const diferenca = moment.duration(expiracao.diff(agora));
-
-  if (diferenca.asMilliseconds() <= 0) {
-    return "Seu login já expirou.";
-  }
-
-  const dias = diferenca.days();
-  const horas = diferenca.hours();
-  const minutos = diferenca.minutes();
-  const segundos = diferenca.seconds();
-
-  return `Seu login expira em ${dias} dia(s), ${horas} hora(s), ${minutos} minuto(s) e ${segundos} segundo(s).`;
-}
 
 async function fazerLogin(req, res) {
   try {
@@ -277,6 +277,12 @@ async function dashboard(req, res) {
     // Calcula o espaço disponível
     const espacoDisponivel = espaco.storage;
 
+    const expiracao88 = "";
+    if (espaco.planos == "free") {
+    } else {
+      expiracao88 = formatarExpiracaoLogin(espaco.expira_em);
+    }
+
     // Prepara um array JSON com os arquivos
     const arquivosJson = arquivos.map((arquivo) => ({
       id: arquivo.uid,
@@ -293,6 +299,7 @@ async function dashboard(req, res) {
     res.status(200).json({
       arquivos: arquivosJson,
       espacoDisponivel,
+      expiracao: expiracao88,
     });
   } catch (error) {
     console.error("Erro ao acessar o dashboard:", error);
