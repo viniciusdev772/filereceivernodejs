@@ -416,15 +416,13 @@ async function ListarCobrancas() {
         const bytesAdicionais = gbAdicional * 1024 * 1024 * 1024; // Converte GB em bytes
         const novoStorage = storageInicial + bytesAdicionais;
 
-        if (storageAdicional > 0) {
-          await Usuario.update(
-            {
-              storage: novoStorage,
-              expira_em: calcularExpiracaoEmMilissegundos(),
-            },
-            { where: { email: cobranca.email } }
-          );
-        }
+        await Usuario.update(
+          {
+            storage: novoStorage,
+            expira_em: calcularExpiracaoEmMilissegundos(),
+          },
+          { where: { email: cobranca.email } }
+        );
 
         await Cob.destroy({ where: { uid: cobranca.uid } });
       }
