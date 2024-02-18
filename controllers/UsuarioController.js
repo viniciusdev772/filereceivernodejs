@@ -41,7 +41,9 @@ const uploadEvent = upload.single("arquivo");
 
 function formatarExpiracaoLogin(milissegundosExpiracao) {
   const agora = moment().tz("America/Sao_Paulo");
+  // Correção: Garantir que o valor em milissegundos seja corretamente interpretado
   const expiracao = moment(milissegundosExpiracao).tz("America/Sao_Paulo");
+
   const diferenca = moment.duration(expiracao.diff(agora));
 
   if (diferenca.asMilliseconds() <= 0) {
