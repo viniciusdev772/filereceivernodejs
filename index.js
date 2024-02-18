@@ -191,15 +191,6 @@ app.post(
   UsuarioController.handleUpload
 );
 
-app.post("/webhook", (request, response) => {
-  // Verifica se a requisição que chegou nesse endpoint foi autorizada
-  if (request.socket.authorized) {
-    response.status(200).end();
-  } else {
-    response.status(401).end();
-  }
-});
-
 // Configura o Express para servir arquivos estáticos da pasta 'uploads'
 app.use("/uploads", express.static("uploads"));
 
@@ -369,6 +360,6 @@ app.use((err, req, res, next) => {
   }
 });
 
-https.createServer(httpsOptions, app).listen(3002, () => {
-  console.log("Servidor Express com HTTPS rodando na porta 443");
+httpsServer.listen(443, () => {
+  console.log(`Servidor Express com HTTPS rodando na porta ${port}`);
 });
