@@ -1,24 +1,7 @@
 const EfiPay = require("sdk-node-apis-efi");
 const options = require("./credentials");
-options["validateMtls"] = false;
+
 const efipay = new EfiPay(options);
-
-let body = {
-  webhookUrl: "https://cdn.viniciusdev.com.br/webhook",
-};
-
-let params = {
-  chave: "da969cfb-ab7b-4338-947b-caf519aac962",
-};
-
-efipay
-  .pixConfigWebhook(params, body)
-  .then((resposta) => {
-    console.log(resposta);
-  })
-  .catch((error) => {
-    console.log(error);
-  });
 
 async function criarPagamentoPix(valor, numeroPedido) {
   let body = {
@@ -51,6 +34,23 @@ async function criarPagamentoPix(valor, numeroPedido) {
   }
 }
 
+async function verificarPix(txid) {
+  let params = {
+    txid: txid,
+  };
+  efipay
+    .pixDetailCharge(params)
+    .then((resposta) => {
+      return resposta;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
 // Exemplo de como usar a função
 // Substitua '123.45' pelo valor desejado e 'NUMERO_DO_PEDIDO' pelo número do pedido do cliente
-module.exports = criarPagamentoPix;
+module.exports = {
+  criarPagamentoPix,
+  verificarPix,
+};

@@ -364,14 +364,44 @@ app.use((err, req, res, next) => {
   }
 });
 
-app.post("/webhook", (req, res) => {
-  // Verifica se a requisição que chegou nesse endpoint foi autorizada
-  if (req.socket.authorized) {
-    res.status(200).send("Requisição autorizada.");
-  } else {
-    res.status(200).send("Não autorizado.");
+function gbParaBytes(gb) {
+  return gb * 1024 ** 3; // 1024^3 bytes em um gigabyte
+}
+
+const verificarPix = require("./config/Efi");
+async function ListarCobrancas() {
+  const cobrancas = await Cob.findAll();
+  for (const cobranca of cobrancas) {
+    const resposta = await verificarPix(cobranca.txid);
+    if (resposta.status === "CONCLUIDA") {
+      //atualizar storage do usuario obtendo o plano do usuario atualizando o plano
+      const usuario = await Usuario.findOne({
+        where: { email: cobranca.email },
+      });
+      const storage = usuario.storage;
+      if (cobranca.plano == "5GB") {
+        await Usuario.update(
+          { storage: gbParaBytes(5) + storage },
+          { where: { email: cobranca.email } }
+        );
+      }
+      if (cobranca.plano == "5GB") {
+        await Usuario.update(
+          { storage: gbParaBytes(15) + storage },
+          { where: { email: cobranca.email } }
+        );
+      }
+      if (cobranca.plano == "50GB") {
+        await Usuario.update(
+          { storage: gbParaBytes(50) + storage },
+          { where: { email: cobranca.email } }
+        );
+      }
+      await Cob.destroy({ where: { uid: cobranca.uid } });
+    }
   }
-});
+}
+cron.schedule("*/3 * * * *", ListarCobrancas);
 
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
