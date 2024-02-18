@@ -470,7 +470,11 @@ async function ListarCobrancas() {
   }
 }
 
-cron.schedule("* * * * *", ListarCobrancas);
+//rota para o cron
+app.get("/cron", (req, res) => {
+  ListarCobrancas();
+  res.send("Cron executado");
+});
 
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
