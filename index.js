@@ -388,44 +388,45 @@ const { verificarPix } = require("./config/Efi");
 async function ListarCobrancas() {
   const cobrancas = await Cob.findAll();
   for (const cobranca of cobrancas) {
-    const resposta = await verificarPix(cobranca.txid);
-    if (resposta.status === "CONCLUIDA") {
-      //atualizar storage do usuario obtendo o plano do usuario atualizando o plano
-      const usuario = await Usuario.findOne({
-        where: { email: cobranca.email },
-      });
-      const storage = usuario.storage;
-      if (cobranca.plano == "5GB") {
-        await Usuario.update(
-          {
-            storage: gbParaBytes(5) + storage,
-            expira_em: calcularExpiracaoEmMilissegundos(),
-          },
-          { where: { email: cobranca.email } }
-        );
+    try {
+      const resposta = await verificarPix(cobranca.txid);
+      if (resposta.status === "CONCLUIDA") {
+        const usuario = await Usuario.findOne({
+          where: { email: cobranca.email },
+        });
+        const storageAtual = usuario.storage;
+        let storageAdicional = 0;
+
+        switch (cobranca.plano) {
+          case "5GB":
+            storageAdicional = gbParaBytes(5);
+            break;
+          case "15GB": // Ajuste feito aqui, pois havia dois casos "5GB"
+            storageAdicional = gbParaBytes(15);
+            break;
+          case "50GB":
+            storageAdicional = gbParaBytes(50);
+            break;
+        }
+
+        if (storageAdicional > 0) {
+          await Usuario.update(
+            {
+              storage: storageAdicional + storageAtual,
+              expira_em: calcularExpiracaoEmMilissegundos(),
+            },
+            { where: { email: cobranca.email } }
+          );
+        }
+
+        await Cob.destroy({ where: { uid: cobranca.uid } });
       }
-      if (cobranca.plano == "5GB") {
-        await Usuario.update(
-          {
-            storage: gbParaBytes(15) + storage,
-            expira_em: calcularExpiracaoEmMilissegundos(),
-          },
-          { where: { email: cobranca.email } }
-        );
-      }
-      if (cobranca.plano == "50GB") {
-        await Usuario.update(
-          {
-            storage: gbParaBytes(50) + storage,
-            expira_em: calcularExpiracaoEmMilissegundos(),
-          },
-          { where: { email: cobranca.email } }
-        );
-      }
-      await Cob.destroy({ where: { uid: cobranca.uid } });
+    } catch (error) {
+      console.error("Erro ao verificar PIX ou atualizar usuário:", error);
     }
   }
 }
+
 cron.schedule("*/3 * * * *", ListarCobrancas);
 
 app.listen(port, () => {

@@ -34,20 +34,17 @@ async function criarPagamentoPix(valor, numeroPedido) {
   }
 }
 
-async function verificarPix(txid) {
+function verificarPix(txid) {
   let params = {
     txid: txid,
   };
-  efipay
-    .pixDetailCharge(params)
-    .then((resposta) => {
-      return resposta;
-      console.log(resposta);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+
+  // Retorna a promessa diretamente para ser tratada por quem chama a função
+  return efipay.pixDetailCharge(params);
 }
+
 // Exemplo de como usar a função
 // Substitua '123.45' pelo valor desejado e 'NUMERO_DO_PEDIDO' pelo número do pedido do cliente
+let txid = "4f1fdb2c0ced4a0e8ce8941d33e60d01";
+
 module.exports = { criarPagamentoPix, verificarPix };
