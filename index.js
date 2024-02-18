@@ -359,6 +359,16 @@ app.use((err, req, res, next) => {
     next();
   }
 });
+
+app.get("/", (req, res) => {
+  if (!req.client.authorized) {
+    return res
+      .status(401)
+      .send("Autenticação do certificado do cliente inválida.");
+  }
+  res.send("Olá, mundo!");
+});
+
 https.createServer(httpsOptions, app).listen(3002, () => {
   console.log("Servidor Express com mTLS rodando na porta 3002");
 });
