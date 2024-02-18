@@ -299,6 +299,7 @@ async function dashboard(req, res) {
     res.status(200).json({
       arquivos: arquivosJson,
       espacoDisponivel,
+      plano: espaco.planos,
       expiracao: expiracao88,
     });
   } catch (error) {
