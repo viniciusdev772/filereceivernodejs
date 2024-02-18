@@ -8,6 +8,7 @@ const port = 3002;
 var logger = require("morgan");
 
 const fs = require("fs-extra");
+const moment = require("moment");
 
 const sequelize = require("./config/config"); // Importa a instância do Sequelize
 const Usuario = require("./models/usuarios"); // Importa o modelo de usuários
@@ -352,6 +353,36 @@ app.use((err, req, res, next) => {
 function gbParaBytes(gb) {
   return gb * 1024 ** 3; // 1024^3 bytes em um gigabyte
 }
+function calcularExpiracaoEmMilissegundos() {
+  // Obtém a data atual
+  const agora = moment();
+  // Calcula a data de expiração adicionando 30 dias à data atual
+  const expiracao = agora.add(30, "days");
+  // Retorna a data de expiração em milissegundos
+  return expiracao.valueOf();
+}
+
+function verificarExpiracaoAssinatura(expiracaoEmMilissegundos) {
+  // Obtém a data e hora atual
+  const agora = moment();
+  // Converte o timestamp de expiração em milissegundos para um objeto moment
+  const dataDeExpiracao = moment(expiracaoEmMilissegundos);
+
+  // Verifica se a data atual é após a data de expiração
+  if (agora.isAfter(dataDeExpiracao)) {
+    return "A assinatura expirou.";
+  } else {
+    return "A assinatura ainda é válida.";
+  }
+}
+
+// Exemplo de uso:
+// Substitua 'expiracaoEmMilissegundos' pelo timestamp em milissegundos da data de expiração da assinatura
+const expiracaoEmMilissegundos = calcularExpiracaoEmMilissegundos(); // Função anterior
+const statusDaAssinatura = verificarExpiracaoAssinatura(
+  expiracaoEmMilissegundos
+);
+console.log(statusDaAssinatura);
 
 const { verificarPix } = require("./config/Efi");
 async function ListarCobrancas() {
@@ -366,19 +397,28 @@ async function ListarCobrancas() {
       const storage = usuario.storage;
       if (cobranca.plano == "5GB") {
         await Usuario.update(
-          { storage: gbParaBytes(5) + storage },
+          {
+            storage: gbParaBytes(5) + storage,
+            expira_em: calcularExpiracaoEmMilissegundos(),
+          },
           { where: { email: cobranca.email } }
         );
       }
       if (cobranca.plano == "5GB") {
         await Usuario.update(
-          { storage: gbParaBytes(15) + storage },
+          {
+            storage: gbParaBytes(15) + storage,
+            expira_em: calcularExpiracaoEmMilissegundos(),
+          },
           { where: { email: cobranca.email } }
         );
       }
       if (cobranca.plano == "50GB") {
         await Usuario.update(
-          { storage: gbParaBytes(50) + storage },
+          {
+            storage: gbParaBytes(50) + storage,
+            expira_em: calcularExpiracaoEmMilissegundos(),
+          },
           { where: { email: cobranca.email } }
         );
       }
