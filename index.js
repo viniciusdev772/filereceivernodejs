@@ -394,7 +394,7 @@ async function ListarCobrancas() {
         const usuario = await Usuario.findOne({
           where: { email: cobranca.email },
         });
-        const storageAtual = usuario.storage;
+        const storageAtual = parseInt(usuario.storage, 10); // Garantindo que seja um inteiro
         let storageAdicional = 0;
 
         switch (cobranca.plano) {
@@ -408,6 +408,9 @@ async function ListarCobrancas() {
             storageAdicional = gbParaBytes(50);
             break;
         }
+
+        // Certifica-se de que storageAdicional também é tratado como um inteiro, se necessário
+        storageAdicional = parseInt(storageAdicional, 10);
 
         if (storageAdicional > 0) {
           await Usuario.update(
