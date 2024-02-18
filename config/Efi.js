@@ -42,6 +42,7 @@ async function verificarPix(txid) {
     .pixDetailCharge(params)
     .then((resposta) => {
       return resposta;
+      console.log(resposta);
     })
     .catch((error) => {
       console.log(error);
