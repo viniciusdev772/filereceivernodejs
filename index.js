@@ -448,6 +448,7 @@ async function ListarCobrancas() {
         console.log(
           `Usuário com email ${cobranca.email} atualizado com sucesso.`
         );
+        return;
       } else {
         console.log(
           `Cobrança ${cobranca.txid} não está concluída. Status: ${resposta.status}`
@@ -463,7 +464,9 @@ async function ListarCobrancas() {
   }
 
   for (const cobranca of cobrancas) {
-    await verificarEProcessarCobranca(cobranca);
+    setTimeout(() => {
+      verificarEProcessarCobranca(cobranca);
+    }, 1000);
   }
 }
 
