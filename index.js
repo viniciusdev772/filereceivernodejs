@@ -360,6 +360,15 @@ app.use((err, req, res, next) => {
   }
 });
 
+app.post("/webhook", (req, res) => {
+  // Verifica se a requisição que chegou nesse endpoint foi autorizada
+  if (req.socket.authorized) {
+    res.status(200).send("Requisição autorizada.");
+  } else {
+    res.status(401).send("Não autorizado.");
+  }
+});
+
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
