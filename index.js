@@ -385,17 +385,31 @@ const statusDaAssinatura = verificarExpiracaoAssinatura(
 console.log(statusDaAssinatura);
 
 const { verificarPix } = require("./config/Efi");
+
 const math = require("mathjs");
 
 async function ListarCobrancas() {
+  console.log("Iniciando ListarCobrancas");
   const cobrancas = await Cob.findAll();
+  console.log(`Total de cobranças encontradas: ${cobrancas.length}`);
+
   for (const cobranca of cobrancas) {
+    console.log(`Processando cobrança com txid: ${cobranca.txid}`);
     try {
       const resposta = await verificarPix(cobranca.txid);
+      console.log(
+        `Resposta da verificação do PIX para txid ${cobranca.txid}:`,
+        resposta
+      );
+
       if (resposta.status === "CONCLUIDA") {
+        console.log(
+          `Cobrança ${cobranca.txid} concluída, buscando usuário com email: ${cobranca.email}`
+        );
         const usuario = await Usuario.findOne({
           where: { email: cobranca.email },
         });
+        console.log(`Usuário encontrado:`, usuario);
 
         const gbAdicional =
           {
@@ -403,10 +417,22 @@ async function ListarCobrancas() {
             "15GB": 15,
             "50GB": 50,
           }[cobranca.plano] || 0;
+        console.log(
+          `GB adicional para plano ${cobranca.plano}: ${gbAdicional}`
+        );
 
         const storageInicial = math.bignumber(usuario.storage); // Assume que `usuario.storage` está em bytes
+        console.log(`Storage inicial (em bytes): ${storageInicial.toString()}`);
+
         const bytesAdicionais = math.multiply(gbAdicional, math.pow(1024, 3)); // Converte GB adicionais em bytes
+        console.log(
+          `Bytes adicionais a serem adicionados: ${bytesAdicionais.toString()}`
+        );
+
         const novoStorage = math.add(storageInicial, bytesAdicionais);
+        console.log(
+          `Novo storage após adição (em bytes): ${novoStorage.toString()}`
+        );
 
         await Usuario.update(
           {
@@ -415,8 +441,16 @@ async function ListarCobrancas() {
           },
           { where: { email: cobranca.email } }
         );
+        console.log(
+          `Usuário com email ${cobranca.email} atualizado com sucesso.`
+        );
 
         await Cob.destroy({ where: { uid: cobranca.uid } });
+        console.log(`Cobrança com UID ${cobranca.uid} excluída com sucesso.`);
+      } else {
+        console.log(
+          `Cobrança ${cobranca.txid} não está concluída. Status: ${resposta.status}`
+        );
       }
     } catch (error) {
       console.error("Erro ao verificar PIX ou atualizar usuário:", error);
