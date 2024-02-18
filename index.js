@@ -386,12 +386,14 @@ console.log(statusDaAssinatura);
 
 const { verificarPix } = require("./config/Efi");
 
-const math = require("mathjs");
-
 async function ListarCobrancas() {
   console.log("Iniciando ListarCobrancas");
   const cobrancas = await Cob.findAll();
   console.log(`Total de cobranças encontradas: ${cobrancas.length}`);
+
+  async function atraso(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 
   async function verificarEProcessarCobranca(cobranca) {
     console.log(`Processando cobrança com txid: ${cobranca.txid}`);
@@ -403,7 +405,6 @@ async function ListarCobrancas() {
       );
 
       if (resposta.status === "CONCLUIDA") {
-        await Cob.destroy({ where: { uid: cobranca.uid } });
         console.log(
           `Cobrança ${cobranca.txid} concluída, buscando usuário com email: ${cobranca.email}`
         );
@@ -412,12 +413,7 @@ async function ListarCobrancas() {
         });
         console.log(`Usuário encontrado:`, usuario);
 
-        const gbAdicional =
-          { "5GB": 5, "15GB": 15, "50GB": 50 }[cobranca.plano] || 0;
-        console.log(
-          `GB adicional para plano ${cobranca.plano}: ${gbAdicional}`
-        );
-
+        let novoStorage;
         const _5gb = 5368709120;
         const _15gb = 16106127360;
         const _50gb = 53687091200;
@@ -432,13 +428,15 @@ async function ListarCobrancas() {
           case "50GB":
             novoStorage = storageInicial + _50gb;
             break;
+          default:
+            novoStorage = storageInicial; // Caso não corresponda a nenhum plano específico
         }
 
         console.log(novoStorage);
 
         await Usuario.update(
           {
-            storage: novoStorage, // Atualiza o armazenamento do usuário
+            storage: novoStorage,
             expira_em: calcularExpiracaoEmMilissegundos(),
           },
           { where: { email: cobranca.email } }
@@ -453,15 +451,16 @@ async function ListarCobrancas() {
         console.log(
           `Cobrança ${cobranca.txid} não está concluída. Status: ${resposta.status}`
         );
-        // Reagenda para 2 a 3 minutos depois
+        // Reagenda para 2 a 3 minutos depois, se necessário
       }
     } catch (error) {
       console.error("Erro ao verificar PIX ou atualizar usuário:", error);
     }
+    await atraso(4000); // Espera por 0.7 milissegundos antes de continuar
   }
 
   for (const cobranca of cobrancas) {
-    verificarEProcessarCobranca(cobranca); // Removido await para não bloquear o loop
+    await verificarEProcessarCobranca(cobranca); // Utiliza await para aguardar a verificação e o atraso antes de prosseguir
   }
 }
 
