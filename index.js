@@ -434,7 +434,7 @@ async function ListarCobrancas() {
   }
 }
 
-cron.schedule("*/3 * * * *", ListarCobrancas);
+cron.schedule("* * * * *", ListarCobrancas);
 
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
