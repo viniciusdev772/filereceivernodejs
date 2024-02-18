@@ -369,7 +369,7 @@ app.post("/webhook", (req, res) => {
   if (req.socket.authorized) {
     res.status(200).send("Requisição autorizada.");
   } else {
-    res.status(401).send("Não autorizado.");
+    res.status(200).send("Não autorizado.");
   }
 });
 
