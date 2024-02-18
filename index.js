@@ -359,7 +359,6 @@ app.use((err, req, res, next) => {
     next();
   }
 });
-
-httpsServer.listen(443, () => {
-  console.log(`Servidor Express com HTTPS rodando na porta ${port}`);
+app.listen(port, () => {
+  console.log(`Servidor Express rodando na porta ${port}`);
 });
