@@ -396,7 +396,7 @@ async function ListarCobrancas() {
         });
         const storageAtual = parseInt(usuario.storage, 10); // Garantindo que seja um inteiro
         let storageAdicional = 0;
-        const gbAdicional = 0;
+        let gbAdicional = 0;
 
         switch (cobranca.plano) {
           case "5GB":
