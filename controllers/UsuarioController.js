@@ -152,6 +152,7 @@ async function fazerLogin(req, res) {
       email: usuario.email,
       nome: usuario.nome,
       storage: usuario.storage,
+      plano: usuario.planos,
       token,
     });
   } catch (error) {
