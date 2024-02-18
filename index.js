@@ -397,42 +397,24 @@ async function ListarCobrancas() {
           where: { email: cobranca.email },
         });
 
-        let gbAdicional = 0;
+        const gbAdicional =
+          {
+            "5GB": 5,
+            "15GB": 15,
+            "50GB": 50,
+          }[cobranca.plano] || 0;
 
-        switch (cobranca.plano) {
-          case "5GB":
-            gbAdicional = 5;
-            break;
-          case "15GB":
-            gbAdicional = 15;
-            break;
-          case "50GB":
-            gbAdicional = 50;
-            break;
-        }
-
-        const storageInicial = math.bignumber(usuario.storage);
-
-        const bytesAdicionais = math.multiply(gbAdicional, math.pow(1024, 3));
+        const storageInicial = math.bignumber(usuario.storage); // Assume que `usuario.storage` está em bytes
+        const bytesAdicionais = math.multiply(gbAdicional, math.pow(1024, 3)); // Converte GB adicionais em bytes
         const novoStorage = math.add(storageInicial, bytesAdicionais);
 
-        // Certifica-se de que o valor convertido para string está dentro do limite VARCHAR(255)
-        const novoStorageStr = novoStorage.toString();
-
-        if (novoStorageStr.length > 255) {
-          console.error(
-            "O valor do novo armazenamento excede o limite de caracteres permitido pelo banco de dados."
-          );
-          // Tratar o erro conforme necessário
-        } else {
-          await Usuario.update(
-            {
-              storage: novoStorageStr,
-              expira_em: calcularExpiracaoEmMilissegundos(),
-            },
-            { where: { email: cobranca.email } }
-          );
-        }
+        await Usuario.update(
+          {
+            storage: novoStorage.toString(), // Atualiza o armazenamento do usuário
+            expira_em: calcularExpiracaoEmMilissegundos(),
+          },
+          { where: { email: cobranca.email } }
+        );
 
         await Cob.destroy({ where: { uid: cobranca.uid } });
       }
