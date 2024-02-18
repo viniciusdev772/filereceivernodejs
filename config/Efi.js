@@ -1,7 +1,24 @@
 const EfiPay = require("sdk-node-apis-efi");
 const options = require("./credentials");
-
+options["validateMtls"] = false;
 const efipay = new EfiPay(options);
+
+let body = {
+  webhookUrl: "https://cdn.viniciusdev.com.br/webhook",
+};
+
+let params = {
+  chave: "da969cfb-ab7b-4338-947b-caf519aac962",
+};
+
+efipay
+  .pixConfigWebhook(params, body)
+  .then((resposta) => {
+    console.log(resposta);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 
 async function criarPagamentoPix(valor, numeroPedido) {
   let body = {

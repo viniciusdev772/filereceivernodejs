@@ -5,6 +5,8 @@ const cors = require("cors"); // Importe o CORS
 const app = express();
 const port = 3002;
 
+var logger = require("morgan");
+
 const fs = require("fs-extra");
 
 const sequelize = require("./config/config"); // Importa a instância do Sequelize
@@ -170,6 +172,8 @@ sincronizarBancoDeDados();
 
 // Permita solicitações de diferentes origens
 app.use(cors());
+
+app.use(logger("dev"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
