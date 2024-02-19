@@ -188,6 +188,64 @@ async function fazerLogin(req, res) {
   }
 }
 
+//importar model WALogin
+const WALogin = require("../models/walogin");
+async function fazerLoginWA(req, res) {
+  try {
+    const { email, senha, numero } = req.body;
+    // Gera o hash MD5 da senha fornecida para comparação
+    const hashSenha = crypto.createHash("md5").update(senha).digest("hex");
+
+    // Busca o usuário pelo email
+    const usuario = await Usuario.findOne({ where: { email } });
+
+    // Verifica se o usuário existe e se a senha está correta
+    if (!usuario || usuario.senha !== hashSenha) {
+      return res.status(401).json({ error: "Email ou senha inválidos" });
+    }
+
+    // Verifica se o email foi verificado
+    if (!usuario.emailVerificado) {
+      return res.status(200).json({
+        error: "Email não verificado. Por favor, verifique seu email.",
+      });
+    }
+
+    // Cria o token JWT
+    const token = jwt.sign(
+      {
+        uid: usuario.uid,
+        email: usuario.email,
+        nome: usuario.nome,
+        storage: usuario.storage,
+      },
+      "seu_secret_jwt",
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    WALogin.create({
+      numero: numero,
+      email: usuario.email,
+    });
+
+    // Retorna o token ao usuário
+    res.status(200).json({
+      message: "Login realizado com sucesso",
+      uid: usuario.uid,
+      email: usuario.email,
+      nome: usuario.nome,
+      storage: usuario.storage,
+      plano: usuario.planos,
+      token,
+    });
+  } catch (error) {
+    console.error("Erro ao fazer login:", error);
+    res.status(200).json({ error: "Erro ao fazer login" });
+  }
+}
+
 async function criarUsuario(req, res) {
   try {
     const { email, senha, nome } = req.body;
@@ -436,4 +494,5 @@ module.exports = {
   uploadEvent,
   dashboard,
   handleUpload,
+  fazerLoginWA,
 };
