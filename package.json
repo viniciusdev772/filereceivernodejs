@@ -27,6 +27,7 @@
     "qrcode": "^1.5.3",
     "sdk-node-apis-efi": "^1.1.0",
     "sequelize": "^6.37.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "venom-bot": "^5.0.21"
   }
 }

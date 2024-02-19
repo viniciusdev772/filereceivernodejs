@@ -471,6 +471,10 @@ async function ListarCobrancas() {
   }
 }
 
+import VenomBot from "./bot/venomBot";
+const myBot = new VenomBot("session-name");
+myBot.start();
+
 //rota para o cron
 app.get("/cron", (req, res) => {
   ListarCobrancas();
