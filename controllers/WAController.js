@@ -8,9 +8,16 @@ async function sign(req, res) {
   });
 
   const uid = login.uid;
-  return res.json({ link: `https://cdn.viniciusdev.com.br/wabot/link/${uid}` });
+  return res.json({
+    link: `https://cdn.viniciusdev.com.br/wabot/link/?token=${uid}`,
+  });
+}
+
+async function handler(req, res) {
+  const { token } = req.query;
 }
 
 module.exports = {
   sign,
+  handler,
 };
