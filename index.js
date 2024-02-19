@@ -12,12 +12,14 @@ const moment = require("moment");
 
 const sequelize = require("./config/config"); // Importa a instância do Sequelize
 const Usuario = require("./models/usuarios"); // Importa o modelo de usuários
-const Arquivo = require("./models/arquivos"); // Importa o modelo de arquivos
+const Arquivo = require("./models/arquivos");
+const WALogin = require("./models/walogin"); // Importa o modelo de arquivos
 const nodemailer = require("nodemailer");
 const Cob = require("./models/cob");
 
 const UsuarioController = require("./controllers/UsuarioController");
 const FilesController = require("./controllers/FilesController");
+const WAController = require("./controllers/WAController");
 
 const cron = require("node-cron");
 
@@ -176,6 +178,8 @@ app.get("/download", UsuarioController.download);
 app.get("/verificar-email", UsuarioController.verificarEmail);
 app.post("/delete_event", FilesController.apagar);
 app.post("/change_plan", UsuarioController.MudarPlano);
+
+app.post("/wabot/sign", WAController.sign);
 
 app.post(
   "/upload_event",
