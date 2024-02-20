@@ -227,7 +227,7 @@ async function fazerLoginWA(req, res) {
 
     WALogin.create({
       numero: numero,
-      email: usuario.email,
+      email: email,
     });
 
     // Retorna o token ao usuário
