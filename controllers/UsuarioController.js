@@ -236,7 +236,7 @@ async function fazerLoginWA(req, res) {
       token,
     });
 
-    WALogin.create({
+    await WALogin.create({
       numero: numero,
       email: req.body.email,
     });
