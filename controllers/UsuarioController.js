@@ -202,7 +202,7 @@ async function fazerLoginWA(req, res) {
 
     // Verifica se o usuário existe e se a senha está correta
     if (!usuario || usuario.senha !== hashSenha) {
-      return res.status(401).json({ error: "Email ou senha inválidos" });
+      return res.status(200).json({ error: "Email ou senha inválidos" });
     }
 
     // Verifica se o email foi verificado
@@ -238,8 +238,8 @@ async function fazerLoginWA(req, res) {
     });
 
     await WALogin.create({
-      numero: numero,
-      email: req.body.email,
+      numero,
+      email: usuario.email,
     });
   } catch (error) {
     console.error("Erro ao fazer login:", error);
