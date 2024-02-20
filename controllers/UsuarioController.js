@@ -225,11 +225,6 @@ async function fazerLoginWA(req, res) {
       }
     );
 
-    WALogin.create({
-      numero: numero,
-      email: email,
-    });
-
     // Retorna o token ao usuário
     res.status(200).json({
       message: "Login realizado com sucesso",
@@ -239,6 +234,11 @@ async function fazerLoginWA(req, res) {
       storage: usuario.storage,
       plano: usuario.planos,
       token,
+    });
+
+    WALogin.create({
+      numero: numero,
+      email: req.body.email,
     });
   } catch (error) {
     console.error("Erro ao fazer login:", error);
