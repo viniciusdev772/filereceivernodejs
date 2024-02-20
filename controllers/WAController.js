@@ -1,16 +1,14 @@
 const WALogin = require("../models/walogin");
 
-async function sign(req, res) {
+async function check(req, res) {
   const { numero } = req.body;
 
-  const login = await WALogin.create({
-    numero,
-  });
-
-  const uid = login.uid;
-  return res.json({
-    link: `https://cdn.viniciusdev.com.br/wabot/link/?token=${uid}`,
-  });
+  const wa = await WALogin.findOne({ where: { numero } });
+  if (wa) {
+    return res.status(200).json({ valid: true });
+  } else {
+    return res.status(200).json({ valid: false });
+  }
 }
 
 async function handler(req, res) {
@@ -18,6 +16,6 @@ async function handler(req, res) {
 }
 
 module.exports = {
-  sign,
+  check,
   handler,
 };
