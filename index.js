@@ -170,7 +170,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.post("/new_user", UsuarioController.criarUsuario);
 app.post("/login", UsuarioController.fazerLogin);
-app.post("/login/wa", UsuarioController.fazerLogin);
+app.post("/login/wa", UsuarioController.fazerLoginWA);
 
 app.post("/dashboard", UsuarioController.dashboard);
 
