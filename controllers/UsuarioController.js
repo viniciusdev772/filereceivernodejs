@@ -12,6 +12,7 @@ require("moment-timezone");
 const { criarPagamentoPix } = require("../config/Efi");
 
 const arquivosModel = require("../models/arquivos");
+const WALogin = require("../models/walogin");
 const Cob = require("../models/cob");
 const fs = require("fs-extra");
 const QRCode = require("qrcode");
@@ -189,7 +190,7 @@ async function fazerLogin(req, res) {
 }
 
 //importar model WALogin
-const WALogin = require("../models/walogin");
+
 async function fazerLoginWA(req, res) {
   try {
     const { email, senha, numero } = req.body;
