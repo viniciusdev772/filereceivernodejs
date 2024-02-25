@@ -61,7 +61,7 @@ function formatarExpiracaoLogin(valorExpiraEm) {
   const minutos = diferenca.minutes();
   const segundos = diferenca.seconds();
 
-  return ` em ${dias} dia(s), ${horas} hora(s), ${minutos} minuto(s) e ${segundos} segundo(s).`;
+  return `  ${dias} dia(s), ${horas} hora(s), ${minutos} minuto(s) e ${segundos} segundo(s).`;
 }
 
 async function handleUpload(req, res) {

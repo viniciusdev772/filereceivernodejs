@@ -8,6 +8,7 @@ const port = 3002;
 var logger = require("morgan");
 
 const fs = require("fs-extra");
+
 const moment = require("moment");
 
 const sequelize = require("./config/config"); // Importa a instância do Sequelize
@@ -190,173 +191,6 @@ app.post(
   UsuarioController.handleUpload
 );
 
-// Configura o Express para servir arquivos estáticos da pasta 'uploads'
-app.use("/uploads", express.static("uploads"));
-
-const https = require("https");
-
-const allowedExtensions = [
-  "png",
-  "jpg",
-  "jpeg",
-  "gif",
-  "pdf",
-  "docx",
-  "txt",
-  "xlsx",
-  "pptx",
-  "mp3",
-  "mp4",
-  "avi",
-  "mov",
-  "zip",
-  "rar",
-  "7z",
-  "csv",
-  "html",
-  "js",
-  "css",
-  "xml",
-  "svg",
-  "bmp",
-  "tif",
-  "tiff",
-  "psd",
-  "eps",
-  "ai",
-  "indd",
-  "raw",
-  "wav",
-  "flac",
-  "m4a",
-  "wmv",
-  "mpg",
-  "flv",
-  "mkv",
-  "swf",
-  "webm",
-  "ogg",
-  "ogv",
-  "sql",
-  "json",
-  "php",
-  "cpp",
-  "c",
-  "cs",
-  "java",
-  "py",
-  "rb",
-  "swift",
-  "go",
-  "sh",
-  "bat",
-  "pl",
-  "lua",
-  "groovy",
-  "r",
-  "mat",
-  "asp",
-  "jsp",
-  "yaml",
-  "toml",
-  "ini",
-  "cfg",
-  "md",
-  "rst",
-  "tex",
-  "ppt",
-  "odt",
-  "ods",
-  "odp",
-  "odg",
-  "doc",
-  "xls",
-  "rtf",
-  "wpd",
-  "key",
-  "numbers",
-  "pages",
-  "3gp",
-  "aif",
-  "cda",
-  "mid",
-  "midi",
-  "mpa",
-  "ogg",
-  "wav",
-  "wma",
-  "wpl",
-  "apk",
-  "exe",
-  "jar",
-  "pyc",
-  "gadget",
-  "wsf",
-  "fnt",
-  "fon",
-  "otf",
-  "ttf",
-  "7zip",
-  "gz",
-  "pkg",
-  "tar.gz",
-  "z",
-  "dmg",
-  "iso",
-  "toast",
-  "vcd",
-  "cr2",
-  "nef",
-  "orf",
-  "sr2",
-];
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
-
-const fileFilter = (req, file, cb) => {
-  const extension = path.extname(file.originalname).toLowerCase().substring(1);
-  if (allowedExtensions.includes(extension)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Extensão de arquivo não permitida."), false);
-  }
-};
-
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 700 * 1024 * 1024 }, // Atualizado para 700MB
-  fileFilter: fileFilter,
-});
-
-app.post("/upload", upload.single("file-upload"), (req, res) => {
-  if (req.file) {
-    // Constrói o link direto para o arquivo
-    const fileLink = `${req.protocol}://${req.hostname}/uploads/${req.file.filename}`;
-    res.send({ message: "Arquivo recebido com sucesso.", fileLink: fileLink });
-  } else {
-    res
-      .status(400)
-      .send(
-        "Erro no upload do arquivo. Certifique-se de que o arquivo é permitido e não excede o tamanho de 700MB."
-      );
-  }
-});
-
-app.use((err, req, res, next) => {
-  if (err) {
-    res.status(400).send(err.message);
-  } else {
-    next();
-  }
-});
-
 function gbParaBytes(gb) {
   return gb * 1024 * 1024 * 1024; // GB * MB * KB * Bytes
 }
@@ -377,9 +211,9 @@ function verificarExpiracaoAssinatura(expiracaoEmMilissegundos) {
 
   // Verifica se a data atual é após a data de expiração
   if (agora.isAfter(dataDeExpiracao)) {
-    return "A assinatura expirou.";
+    return "expired";
   } else {
-    return "A assinatura ainda é válida.";
+    return "valid";
   }
 }
 
@@ -477,6 +311,10 @@ async function ListarCobrancas() {
     }, 1000);
   }
 }
+
+app.get("/", (req, res) => {
+  res.send("SERVIDOR DO SITE SERVIDOR.VINICIUSDEV.COM.BR");
+});
 
 //rota para o cron
 app.get("/cron", (req, res) => {
