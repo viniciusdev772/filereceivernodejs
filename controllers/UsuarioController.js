@@ -456,6 +456,7 @@ async function MudarPlano(req, res) {
       );
 
       await Cob.create({
+        uid : numeroPedido,
         txid: respostaPagamento.txid,
         email: usuario.email,
         plano: plano,
