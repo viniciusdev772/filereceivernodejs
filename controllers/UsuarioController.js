@@ -158,6 +158,14 @@ async function fazerLogin(req, res) {
       });
     }
 
+    if (usuario.banned) {
+      return res.status(403).json({
+        sucesso: false,
+        banido: true,
+        redirecionar: "/ban",
+      });
+    }
+
     const token = jwt.sign(
       {
         uid: usuario.uid,
