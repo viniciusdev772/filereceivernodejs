@@ -148,16 +148,14 @@ async function fazerLogin(req, res) {
     if (!usuario || usuario.senha !== hashSenha) {
       return res
         .status(401)
-        .json({ sucesso: false, mensagem: "Email ou senha inválidos." });
+        .json({ sucesso: false, message: "Email ou senha inválidos." });
     }
 
     if (!usuario.emailVerificado) {
-      return res
-        .status(403)
-        .json({
-          sucesso: false,
-          mensagem: "Email não verificado. Por favor, verifique seu email.",
-        });
+      return res.status(403).json({
+        sucesso: false,
+        message: "Email não verificado. Por favor, verifique seu email.",
+      });
     }
 
     const token = jwt.sign(
@@ -173,7 +171,7 @@ async function fazerLogin(req, res) {
 
     res.status(200).json({
       sucesso: true,
-      mensagem: "Login realizado com sucesso.",
+      message: "Login realizado com sucesso.",
       uid: usuario.uid,
       email: usuario.email,
       nome: usuario.nome,
@@ -185,7 +183,7 @@ async function fazerLogin(req, res) {
     console.error("Erro ao fazer login:", error);
     res
       .status(500)
-      .json({ sucesso: false, mensagem: "Erro interno ao fazer login." });
+      .json({ sucesso: false, message: "Erro interno ao fazer login." });
   }
 }
 
