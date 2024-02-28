@@ -13,6 +13,14 @@ Usuario.init(
       defaultValue: () => uuidv4(),
       primaryKey: true,
     },
+    banned: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    banned_motivo: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
     planos: {
       type: DataTypes.STRING,
       defaultValue: "free",
