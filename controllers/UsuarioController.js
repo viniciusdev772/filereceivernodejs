@@ -141,25 +141,25 @@ const transporter = nodemailer.createTransport({
 async function fazerLogin(req, res) {
   try {
     const { email, senha } = req.body;
-    // Gera o hash MD5 da senha fornecida para comparação
     const hashSenha = crypto.createHash("md5").update(senha).digest("hex");
 
-    // Busca o usuário pelo email
     const usuario = await Usuario.findOne({ where: { email } });
 
-    // Verifica se o usuário existe e se a senha está correta
     if (!usuario || usuario.senha !== hashSenha) {
-      return res.status(401).json({ error: "Email ou senha inválidos" });
+      return res
+        .status(401)
+        .json({ sucesso: false, mensagem: "Email ou senha inválidos." });
     }
 
-    // Verifica se o email foi verificado
     if (!usuario.emailVerificado) {
-      return res.status(200).json({
-        error: "Email não verificado. Por favor, verifique seu email.",
-      });
+      return res
+        .status(403)
+        .json({
+          sucesso: false,
+          mensagem: "Email não verificado. Por favor, verifique seu email.",
+        });
     }
 
-    // Cria o token JWT
     const token = jwt.sign(
       {
         uid: usuario.uid,
@@ -168,14 +168,12 @@ async function fazerLogin(req, res) {
         storage: usuario.storage,
       },
       "seu_secret_jwt",
-      {
-        expiresIn: "7d",
-      }
+      { expiresIn: "7d" }
     );
 
-    // Retorna o token ao usuário
     res.status(200).json({
-      message: "Login realizado com sucesso",
+      sucesso: true,
+      mensagem: "Login realizado com sucesso.",
       uid: usuario.uid,
       email: usuario.email,
       nome: usuario.nome,
@@ -185,7 +183,9 @@ async function fazerLogin(req, res) {
     });
   } catch (error) {
     console.error("Erro ao fazer login:", error);
-    res.status(500).json({ error: "Erro ao fazer login" });
+    res
+      .status(500)
+      .json({ sucesso: false, mensagem: "Erro interno ao fazer login." });
   }
 }
 
