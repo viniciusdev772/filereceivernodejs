@@ -246,7 +246,7 @@ async function ListarCobrancas() {
       );
 
       // Exclui a cobrança imediatamente se a transação foi concluída ou não, para evitar reprocessamento
-      await Cob.destroy({ where: { uid: cobranca.uid } });
+
       console.log(`Cobrança com UID ${cobranca.uid} excluída com sucesso.`);
 
       if (resposta.status === "CONCLUIDA") {
