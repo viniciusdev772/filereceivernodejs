@@ -440,9 +440,9 @@ async function MudarPlano(req, res) {
     const numeroPedido = uuidv4();
 
     const valorPlanos = {
-      "5GB": "1.99",
-      "15GB": "39.99",
-      "50GB": "99.99",
+      "5GB": "0.99",
+      "15GB": "4.99",
+      "50GB": "9.99",
     };
 
     if (!valorPlanos[plano]) {
