@@ -456,7 +456,7 @@ async function MudarPlano(req, res) {
       );
 
       await Cob.create({
-        uid : numeroPedido,
+        uid: numeroPedido,
         txid: respostaPagamento.txid,
         email: usuario.email,
         plano: plano,
@@ -469,7 +469,7 @@ async function MudarPlano(req, res) {
         to: usuario.email,
         subject: `Seu pedido de ${plano}`,
         text: `Olá, ${usuario.nome}. Seu pedido de pagamento PIX foi criado com sucesso. O número do pedido é ${numeroPedido}.`,
-        html: `<p>Olá, ${usuario.nome}. Seu pedido de pagamento PIX foi criado com sucesso. O número do pedido é ${numeroPedido}.</p><p><img src="${qrCodeURL}" alt="QR Code de Pagamento"/></p>`,
+        html: `<p>Olá, ${usuario.nome}. Seu pedido de pagamento PIX foi criado com sucesso. O número do pedido é ${numeroPedido}.</p> Seu Pix copia e cola é  ${respostaPagamento.pixCopiaECola}<p></p>`,
       });
 
       return res.status(200).send({
