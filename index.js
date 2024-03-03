@@ -205,20 +205,26 @@ app.post("/regen_event", async (req, res) => {
       return res.status(401).send({ error: "Token inválido." });
     }
 
-    const short = await arquivosModel.findAll({
+    const short = await arquivosModel.findOne({
       where: { uid: fileid },
     });
 
-    //verficar se o decoded.uid é igual ao short.uid_dono
-    if (decoded.uid !== short[0].uid_dono) {
+    // verificar se decoded.uid é igual a short.uid_dono
+    if (decoded.uid !== short.uid_dono) {
       return res.status(401).send({ error: "Token inválido." });
     }
 
-    short.short = Sequelize.UUIDV4;
+    // Gerar um novo valor UUIDv4
+    short.short = Sequelize.fn("uuid_generate_v4");
+
+    // Salvar as alterações no banco de dados
     await short.save();
 
     return res.status(200).send({ short: short.short });
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ error: "Erro interno do servidor." });
+  }
 });
 
 app.post(
