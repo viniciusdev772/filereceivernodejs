@@ -185,6 +185,7 @@ app.post("/delete_event", FilesController.apagar);
 app.post("/change_plan", UsuarioController.MudarPlano);
 
 app.post("/wabot/check", WAController.check);
+app.post("/wabot/logout", WAController.logout);
 app.post("/wabot/arquivos", WAController.arquivos);
 app.get("/wabot/link", WAController.handler);
 
