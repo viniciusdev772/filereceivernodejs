@@ -18,11 +18,11 @@ const WALogin = require("./models/walogin"); // Importa o modelo de arquivos
 const nodemailer = require("nodemailer");
 const Cob = require("./models/cob");
 const arquivosModel = require("./models/arquivos");
-
+const { v4: uuidv4 } = require("uuid");
 const UsuarioController = require("./controllers/UsuarioController");
 const FilesController = require("./controllers/FilesController");
 const WAController = require("./controllers/WAController");
-
+const crypto = require("crypto");
 const cron = require("node-cron");
 
 const jwt = require("jsonwebtoken");
@@ -215,7 +215,7 @@ app.post("/regen_event", async (req, res) => {
     }
 
     // Gerar um novo valor UUIDv4
-    short.short = Sequelize.fn("uuid_generate_v4");
+    short.short = crypto.randomBytes(5).toString("hex");
 
     // Salvar as alterações no banco de dados
     await short.save();
