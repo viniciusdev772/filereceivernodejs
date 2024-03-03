@@ -353,6 +353,7 @@ async function dashboard(req, res) {
       id: arquivo.uid,
       nome: arquivo.nome,
       caminho: arquivo.caminho,
+      downloads: arquivo.download_count,
       size: arquivo.size,
       short: arquivo.short,
       link: `https://${req.hostname}/download?token=${arquivo.short}`,
