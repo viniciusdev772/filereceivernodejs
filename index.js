@@ -216,6 +216,8 @@ app.post("/regen_event", async (req, res) => {
 
     short.short = Sequelize.UUIDV4;
     await short.save();
+
+    return res.status(200).send({ short: short.short });
   } catch (error) {}
 });
 
