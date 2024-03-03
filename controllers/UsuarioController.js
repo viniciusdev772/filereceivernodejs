@@ -246,6 +246,7 @@ async function fazerLoginWA(req, res) {
     await WALogin.create({
       numero,
       email: usuario.email,
+      token: token,
     });
   } catch (error) {
     console.error("Erro ao fazer login:", error);
