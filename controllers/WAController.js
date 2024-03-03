@@ -7,7 +7,7 @@ async function check(req, res) {
 
   const wa = await WALogin.findOne({ where: { numero } });
   if (wa) {
-    return res.status(200).json({ valid: true });
+    return res.status(200).json({ valid: true, token: wa.token });
   } else {
     return res.status(200).json({ valid: false });
   }
