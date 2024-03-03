@@ -20,6 +20,10 @@ WALogin.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    token: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
   },
   {
     sequelize,
