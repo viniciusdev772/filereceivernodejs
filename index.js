@@ -17,12 +17,15 @@ const Arquivo = require("./models/arquivos");
 const WALogin = require("./models/walogin"); // Importa o modelo de arquivos
 const nodemailer = require("nodemailer");
 const Cob = require("./models/cob");
+const arquivosModel = require("./models/arquivos");
 
 const UsuarioController = require("./controllers/UsuarioController");
 const FilesController = require("./controllers/FilesController");
 const WAController = require("./controllers/WAController");
 
 const cron = require("node-cron");
+
+const jwt = require("jsonwebtoken");
 
 const transporter = nodemailer.createTransport({
   host: "mail.viniciusdev.com.br",
@@ -184,6 +187,37 @@ app.post("/change_plan", UsuarioController.MudarPlano);
 app.post("/wabot/check", WAController.check);
 app.post("/wabot/arquivos", WAController.arquivos);
 app.get("/wabot/link", WAController.handler);
+
+app.post("/regen_event", async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).send({ error: "Nenhum token fornecido." });
+    }
+
+    const fileid = req.body.fileid;
+
+    let decoded;
+    try {
+      // Substitua 'seu_secret_jwt' pela sua chave secreta real
+      decoded = jwt.verify(authHeader, "seu_secret_jwt");
+    } catch (error) {
+      return res.status(401).send({ error: "Token inválido." });
+    }
+
+    const short = await arquivosModel.findAll({
+      where: { uid: fileid },
+    });
+
+    //verficar se o decoded.uid é igual ao short.uid_dono
+    if (decoded.uid !== short[0].uid_dono) {
+      return res.status(401).send({ error: "Token inválido." });
+    }
+
+    short.short = Sequelize.UUIDV4;
+    await short.save();
+  } catch (error) {}
+});
 
 app.post(
   "/upload_event",
