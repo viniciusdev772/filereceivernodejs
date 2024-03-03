@@ -393,6 +393,9 @@ async function download(req, res) {
 
     // Faz o download do arquivo para o usuário
     res.download(caminho, (err) => {
+      //atualizar o contador de download
+      arquivo.download_count += 1;
+      arquivo.save();
       if (err) {
         // Log do erro
         console.error("Erro ao fazer download do arquivo:", err);

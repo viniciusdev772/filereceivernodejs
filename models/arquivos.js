@@ -28,6 +28,11 @@ Arquivo.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    download_count: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: false,
+    },
     caminho: {
       type: DataTypes.STRING,
       allowNull: false,
