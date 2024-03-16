@@ -25,6 +25,8 @@ const WAController = require("./controllers/WAController");
 const crypto = require("crypto");
 const cron = require("node-cron");
 
+const WebToken = require("./models/webtoken");
+
 const jwt = require("jsonwebtoken");
 
 const transporter = nodemailer.createTransport({
@@ -357,6 +359,12 @@ async function ListarCobrancas() {
 
 app.get("/", (req, res) => {
   res.send("SERVIDOR DO SITE SERVIDOR.VINICIUSDEV.COM.BR");
+});
+
+app.post("/new_remote", (req, res) => {
+  const { token } = req.body;
+  WebToken.create({ uuid: token });
+  res.json({ site: `https://viniciusdev.com.br/authorize?token=${token}` });
 });
 
 //rota para o cron
