@@ -14,11 +14,11 @@ WebToken.init(
     },
     uuid: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     token: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
   },
   {
