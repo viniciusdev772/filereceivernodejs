@@ -367,7 +367,7 @@ app.get("/", (req, res) => {
 app.post("/new_remote", async (req, res) => {
   const { token, celular } = req.body;
   await WebToken.create({ uuid: token, celular: celular });
-  celular = btoa(celular);
+
   res.json({ site: `https://viniciusdev.com.br/authorize?token=${token}` });
 });
 
