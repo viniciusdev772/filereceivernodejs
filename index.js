@@ -364,15 +364,15 @@ app.get("/", (req, res) => {
   res.send("SERVIDOR DO SITE SERVIDOR.VINICIUSDEV.COM.BR");
 });
 
-app.post("/new_remote", (req, res) => {
+app.post("/new_remote", async (req, res) => {
   const { token } = req.body;
-  WebToken.create({ uuid: token });
+  await WebToken.create({ uuid: token });
   res.json({ site: `https://viniciusdev.com.br/authorize?token=${token}` });
 });
 
-app.post("/consultar_token", (req, res) => {
+app.post("/consultar_token", async (req, res) => {
   const { token } = req.body;
-  WebToken.findOne({ where: { uuid: token } }).then((token) => {
+  await WebToken.findOne({ where: { uuid: token } }).then((token) => {
     if (token) {
       res.json({ jwt: token.token });
     } else {
@@ -381,9 +381,9 @@ app.post("/consultar_token", (req, res) => {
   });
 });
 
-app.post("/registrar_auth", (req, res) => {
+app.post("/registrar_auth", async (req, res) => {
   const { token, auth } = req.body;
-  WebToken.findOne({ where: { uuid: token } }).then((token) => {
+  await WebToken.findOne({ where: { uuid: token } }).then((token) => {
     if (token) {
       token.token = auth;
       token.save();
