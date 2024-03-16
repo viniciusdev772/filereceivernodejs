@@ -16,6 +16,10 @@ WebToken.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    celular: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     token: {
       type: DataTypes.TEXT,
       allowNull: true,

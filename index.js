@@ -365,8 +365,9 @@ app.get("/", (req, res) => {
 });
 
 app.post("/new_remote", async (req, res) => {
-  const { token } = req.body;
-  await WebToken.create({ uuid: token });
+  const { token, celular } = req.body;
+  await WebToken.create({ uuid: token, celular: celular });
+  celular = btoa(celular);
   res.json({ site: `https://viniciusdev.com.br/authorize?token=${token}` });
 });
 
@@ -376,7 +377,7 @@ app.post("/consultar_token", async (req, res) => {
     if (token) {
       res.json({ jwt: token.token });
     } else {
-      res.json({ error: "Token não encontrado" });
+      res.status(401).json({ error: "Token não encontrado" });
     }
   });
 });
