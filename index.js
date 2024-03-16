@@ -302,9 +302,9 @@ async function ListarCobrancas() {
           where: { email: cobranca.email },
         });
         console.log(`Usuário encontrado:`, usuario);
-        
+
         await Cob.destroy({ where: { txid: cobranca.txid } });
-    console.log(`Cobrança com txid ${cobranca.txid} excluída com sucesso.`);
+        console.log(`Cobrança com txid ${cobranca.txid} excluída com sucesso.`);
 
         let novoStorage;
         const _5gb = 5368709120;
@@ -368,6 +368,30 @@ app.post("/new_remote", (req, res) => {
   const { token } = req.body;
   WebToken.create({ uuid: token });
   res.json({ site: `https://viniciusdev.com.br/authorize?token=${token}` });
+});
+
+app.post("/consultar_token", (req, res) => {
+  const { token } = req.body;
+  WebToken.findOne({ where: { uuid: token } }).then((token) => {
+    if (token) {
+      res.json({ jwt: token.token });
+    } else {
+      res.json({ error: "Token não encontrado" });
+    }
+  });
+});
+
+app.post("/registrar_auth", (req, res) => {
+  const { token, auth } = req.body;
+  WebToken.findOne({ where: { uuid: token } }).then((token) => {
+    if (token) {
+      token.token = auth;
+      token.save();
+      res.json({ status: "ok" });
+    } else {
+      res.json({ error: "Token não encontrado" });
+    }
+  });
 });
 
 //rota para o cron
