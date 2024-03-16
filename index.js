@@ -377,7 +377,7 @@ app.post("/consultar_token", async (req, res) => {
     if (token) {
       res.json({ jwt: token.token });
     } else {
-      res.status(401).json({ error: "Token não encontrado" });
+      res.json({ error: "Token não encontrado" });
     }
   });
 });
