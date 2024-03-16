@@ -302,6 +302,9 @@ async function ListarCobrancas() {
           where: { email: cobranca.email },
         });
         console.log(`Usuário encontrado:`, usuario);
+        
+        await Cob.destroy({ where: { txid: cobranca.txid } });
+    console.log(`Cobrança com txid ${cobranca.txid} excluída com sucesso.`);
 
         let novoStorage;
         const _5gb = 5368709120;
