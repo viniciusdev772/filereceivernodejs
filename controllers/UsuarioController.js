@@ -426,17 +426,10 @@ async function download(req, res) {
       } catch (error) {
         tentativa++;
         if (tentativa === MAX_TENTATIVAS) {
-          console.error(
-            "Erro ao fazer download do arquivo após várias tentativas:",
-            error
-          );
-          return res
-            .status(500)
-            .send("Erro ao fazer download do arquivo após várias tentativas.");
+          console.error("Erro ao fazer download do arquivo após várias tentativas:", error);
+          return res.status(500).send(`Erro ao fazer download do arquivo após várias tentativas: ${error.message}`);
         }
-        console.error(
-          `Erro ao fazer download do arquivo. Tentando novamente... (Tentativa ${tentativa})`
-        );
+        console.error(`Erro ao fazer download do arquivo. Tentando novamente... (Tentativa ${tentativa})`);
       }
     }
   } catch (error) {
@@ -446,10 +439,11 @@ async function download(req, res) {
       // Em caso de erro na busca ou qualquer outro erro, envia uma resposta de erro genérico
       return res
         .status(500)
-        .send("Erro ao processar a solicitação de download.");
+        .send(`Erro ao processar a solicitação de download: ${error.message}`);
     }
   }
 }
+
 
 const generateQR = async (text) => {
   try {
