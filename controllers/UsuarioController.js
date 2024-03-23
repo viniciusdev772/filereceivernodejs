@@ -36,7 +36,12 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1 * 1024 * 1024 * 1024, // 1 GB em bytes
+  },
+});
 
 const uploadEvent = upload.single("arquivo");
 
@@ -365,7 +370,7 @@ async function dashboard(req, res) {
     // Retorna apenas o array de arquivos relacionados ao usuário
     res.status(200).json({
       banido: espaco.banned,
-      nome : espaco.nome,
+      nome: espaco.nome,
       motivo: espaco.banned_motivo,
       arquivos: arquivosJson,
       espacoDisponivel,
