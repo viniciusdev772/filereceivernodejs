@@ -175,6 +175,10 @@ app.use(logger("dev"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const bodyParser = require("body-parser");
+
+app.use(bodyParser.json({ limit: "800mb" }));
+app.use(bodyParser.urlencoded({ limit: "800mb", extended: true }));
 
 app.post("/new_user", UsuarioController.criarUsuario);
 app.post("/login", UsuarioController.fazerLogin);
