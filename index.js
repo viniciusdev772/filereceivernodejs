@@ -201,9 +201,17 @@ app.use("/uploads", express.static("./uploads"));
 //definir
 
 app.post("/register_qr", async (req, res) => {
-  const { token, unico } = req.body;
-  await qrcode.create({ token: token, unico: unico });
-  res.json({ status: "ok" });
+  try {
+    const { token, unico } = req.body;
+
+    // Supondo que qrcode.create retorna uma promise
+    await qrcode.create({ token: token, unico: unico });
+
+    res.json({ status: "ok" });
+  } catch (error) {
+    console.error("Erro ao registrar QR:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
 });
 
 app.post("/check_qr", async (req, res) => {
