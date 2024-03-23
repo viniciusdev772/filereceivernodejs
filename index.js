@@ -40,7 +40,6 @@ const transporter = nodemailer.createTransport({
 });
 
 //definir a pasta uploads como publica
-app.use("/uploads", express.static("uploads"));
 
 const Sequelize = require("sequelize");
 const { Op } = require("sequelize");
@@ -193,7 +192,7 @@ app.post("/wabot/check", WAController.check);
 app.post("/wabot/logout", WAController.logout);
 app.post("/wabot/arquivos", WAController.arquivos);
 app.get("/wabot/link", WAController.handler);
-
+app.use("/uploads", express.static("uploads"));
 //definir
 
 app.post("/regen_event", async (req, res) => {
