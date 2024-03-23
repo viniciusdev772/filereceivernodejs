@@ -222,6 +222,7 @@ app.post("/check_qr", async (req, res) => {
     const qr = await qrcode.findOne({ where: { token: token } });
 
     if (qr) {
+      res.send(qr.perm);
       // Se o QRCode for encontrado, retorna o valor da coluna 'perm'
       res.json({ token: qr.perm });
     } else {
