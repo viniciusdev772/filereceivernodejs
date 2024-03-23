@@ -23,6 +23,7 @@ const UsuarioController = require("./controllers/UsuarioController");
 const FilesController = require("./controllers/FilesController");
 const WAController = require("./controllers/WAController");
 const crypto = require("crypto");
+const qrcode = require("./models/qrcode");
 const cron = require("node-cron");
 
 const WebToken = require("./models/webtoken");
@@ -198,6 +199,36 @@ app.post("/wabot/arquivos", WAController.arquivos);
 app.get("/wabot/link", WAController.handler);
 app.use("/uploads", express.static("./uploads"));
 //definir
+
+app.post("/register_qr", async (req, res) => {
+  const { token, unico } = req.body;
+  await qrcode.create({ token: token, unico: unico });
+  res.json({ status: "ok" });
+});
+
+app.post("/check_qr", async (req, res) => {
+  const { token } = req.body;
+  await qrcode.findOne({ where: { token: token } }).then((qr) => {
+    if (qr) {
+      res.json({ token: qr.perm });
+    } else {
+      res.json({ error: "QR não encontrado" });
+    }
+  });
+});
+
+app.post("/saveqr", async (req, res) => {
+  const { token, perm } = req.body;
+  await qrcode.findOne({ where: { token: token } }).then((qr) => {
+    if (qr) {
+      qr.perm = perm;
+      qr.save();
+      res.json({ status: "ok" });
+    } else {
+      res.json({ error: "QR não encontrado" });
+    }
+  });
+});
 
 app.post("/regen_event", async (req, res) => {
   try {
