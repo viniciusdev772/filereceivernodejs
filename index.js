@@ -236,16 +236,26 @@ app.post("/check_qr", async (req, res) => {
 });
 
 app.post("/saveqr", async (req, res) => {
-  const { token, perm } = req.body;
-  await qrcode.findOne({ where: { token: token } }).then((qr) => {
+  try {
+    const { token, perm } = req.body;
+
+    // Encontra o QRCode com base no token fornecido
+    const qr = await qrcode.findOne({ where: { token: token } });
+
     if (qr) {
+      // Atualiza a coluna 'perm' com o valor fornecido
       qr.perm = perm;
-      qr.save();
-      res.json({ status: "ok" });
+      await qr.save(); // Salva as alterações no banco de dados
+      res.json({ status: "ok" }); // Retorna uma resposta de sucesso
     } else {
+      // Se o QRCode não for encontrado, retorna uma mensagem de erro
       res.json({ error: "QR não encontrado" });
     }
-  });
+  } catch (error) {
+    // Se ocorrer um erro durante o processo, retorna uma mensagem de erro genérica
+    console.error("Erro ao salvar QR no banco de dados:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
 });
 
 app.post("/regen_event", async (req, res) => {
