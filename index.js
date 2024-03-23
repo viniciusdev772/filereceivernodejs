@@ -192,7 +192,7 @@ app.post("/wabot/check", WAController.check);
 app.post("/wabot/logout", WAController.logout);
 app.post("/wabot/arquivos", WAController.arquivos);
 app.get("/wabot/link", WAController.handler);
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static("./uploads"));
 //definir
 
 app.post("/regen_event", async (req, res) => {
