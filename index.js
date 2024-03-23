@@ -219,10 +219,9 @@ app.post("/check_qr", async (req, res) => {
     const { token } = req.body;
 
     // Consulta o banco de dados para encontrar o QRCode com base no token fornecido
-    const qr = await qrcode.findOne({ where: { token: token } });
+    const qr = await qrcode.findOne({ where: { unico: token } });
 
     if (qr) {
-      res.send(qr.perm);
       // Se o QRCode for encontrado, retorna o valor da coluna 'perm'
       res.json({ token: qr.perm });
     } else {
