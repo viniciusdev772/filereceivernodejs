@@ -399,21 +399,46 @@ async function download(req, res) {
     // Recupera o caminho do arquivo
     const caminho = arquivo.caminho;
 
-    // Faz o download do arquivo para o usuário
-    res.download(caminho, (err) => {
-      //atualizar o contador de download
-      arquivo.download_count += 1;
-      arquivo.save();
-      if (err) {
-        // Log do erro
-        console.error("Erro ao fazer download do arquivo:", err);
-        // Verifica se os cabeçalhos ainda não foram enviados para o cliente
-        if (!res.headersSent) {
-          // Em caso de erro no download, envia uma resposta de erro
-          return res.status(500).send("Erro ao fazer download do arquivo.");
+    // Função para fazer o download
+    const fazerDownload = () => {
+      return new Promise((resolve, reject) => {
+        res.download(caminho, (err) => {
+          if (err) {
+            console.error("Erro ao fazer download do arquivo:", err);
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+      });
+    };
+
+    // Tenta fazer o download e, se falhar, tenta novamente até um número máximo de tentativas
+    const MAX_TENTATIVAS = 3;
+    let tentativa = 0;
+    while (tentativa < MAX_TENTATIVAS) {
+      try {
+        await fazerDownload();
+        // Atualiza o contador de download apenas se o download for bem-sucedido
+        arquivo.download_count += 1;
+        await arquivo.save();
+        break; // Sai do loop se o download for bem-sucedido
+      } catch (error) {
+        tentativa++;
+        if (tentativa === MAX_TENTATIVAS) {
+          console.error(
+            "Erro ao fazer download do arquivo após várias tentativas:",
+            error
+          );
+          return res
+            .status(500)
+            .send("Erro ao fazer download do arquivo após várias tentativas.");
         }
+        console.error(
+          `Erro ao fazer download do arquivo. Tentando novamente... (Tentativa ${tentativa})`
+        );
       }
-    });
+    }
   } catch (error) {
     console.error("Erro ao processar o download:", error);
     // Verifica se os cabeçalhos ainda não foram enviados para o cliente
