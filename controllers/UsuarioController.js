@@ -396,6 +396,8 @@ async function download(req, res) {
       return res.status(404).send("Arquivo não encontrado.");
     }
 
+    arquivo.download_count += 1;
+    await arquivo.save();
     // Recupera o caminho do arquivo
     const caminho = arquivo.caminho;
 
@@ -420,16 +422,24 @@ async function download(req, res) {
       try {
         await fazerDownload();
         // Atualiza o contador de download apenas se o download for bem-sucedido
-        arquivo.download_count += 1;
-        await arquivo.save();
+
         break; // Sai do loop se o download for bem-sucedido
       } catch (error) {
         tentativa++;
         if (tentativa === MAX_TENTATIVAS) {
-          console.error("Erro ao fazer download do arquivo após várias tentativas:", error);
-          return res.status(500).send(`Erro ao fazer download do arquivo após várias tentativas: ${error.message}`);
+          console.error(
+            "Erro ao fazer download do arquivo após várias tentativas:",
+            error
+          );
+          return res
+            .status(500)
+            .send(
+              `Erro ao fazer download do arquivo após várias tentativas: ${error.message}`
+            );
         }
-        console.error(`Erro ao fazer download do arquivo. Tentando novamente... (Tentativa ${tentativa})`);
+        console.error(
+          `Erro ao fazer download do arquivo. Tentando novamente... (Tentativa ${tentativa})`
+        );
       }
     }
   } catch (error) {
@@ -443,7 +453,6 @@ async function download(req, res) {
     }
   }
 }
-
 
 const generateQR = async (text) => {
   try {
