@@ -23,6 +23,11 @@ const Cob = require("../models/cob");
 const fs = require("fs-extra");
 const QRCode = require("qrcode");
 const { link } = require("fs");
+
+function obterIpReal(req) {
+  return req.headers["cf-connecting-ip"] || req.connection.remoteAddress;
+}
+
 ///dff
 const storage = multer.diskStorage({
   destination: async function (req, file, cb) {
@@ -157,14 +162,14 @@ async function fazerLogin(req, res) {
     const usuario = await Usuario.findOne({ where: { email } });
 
     if (!usuario || usuario.senha !== hashSenha) {
-      enviarEmailLoginMalSucedido(email, req.ip, usuario.nome);
+      enviarEmailLoginMalSucedido(email, obterIpReal(req), usuario.nome);
       return res
         .status(401)
         .json({ sucesso: false, message: "Email ou senha inválidos." });
     }
 
     if (!usuario.emailVerificado) {
-      enviarEmailLoginMalSucedido(email, req.ip, usuario.nome);
+      enviarEmailLoginMalSucedido(email, obterIpReal(req), usuario.nome);
       return res.status(403).json({
         sucesso: false,
         message: "Email não verificado. Por favor, verifique seu email.",
@@ -190,7 +195,7 @@ async function fazerLogin(req, res) {
       { expiresIn: "7d" }
     );
 
-    enviarEmailLoginSucedido(email, req.ip, usuario.nome);
+    enviarEmailLoginSucedido(email, obterIpReal(req), usuario.nome);
     console.log(req);
 
     res.status(200).json({
