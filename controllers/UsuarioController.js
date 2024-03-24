@@ -191,6 +191,7 @@ async function fazerLogin(req, res) {
     );
 
     enviarEmailLoginSucedido(email, req.ip, usuario.nome);
+    console.log(req);
 
     res.status(200).json({
       sucesso: true,
