@@ -6,6 +6,12 @@ const { v4: uuidv4 } = require("uuid");
 const multer = require("multer");
 
 const moment = require("moment");
+
+const {
+  enviarEmailLoginSucedido,
+  enviarEmailLoginMalSucedido,
+} = require("../eventos/LoginSucedido");
+
 require("moment-timezone");
 
 //importar funcao de pagamento
@@ -151,12 +157,14 @@ async function fazerLogin(req, res) {
     const usuario = await Usuario.findOne({ where: { email } });
 
     if (!usuario || usuario.senha !== hashSenha) {
+      enviarEmailLoginMalSucedido(email, req.ip, usuario.nome);
       return res
         .status(401)
         .json({ sucesso: false, message: "Email ou senha inválidos." });
     }
 
     if (!usuario.emailVerificado) {
+      enviarEmailLoginMalSucedido(email, req.ip, usuario.nome);
       return res.status(403).json({
         sucesso: false,
         message: "Email não verificado. Por favor, verifique seu email.",
@@ -181,6 +189,8 @@ async function fazerLogin(req, res) {
       "seu_secret_jwt",
       { expiresIn: "7d" }
     );
+
+    enviarEmailLoginSucedido(email, req.ip, usuario.nome);
 
     res.status(200).json({
       sucesso: true,
