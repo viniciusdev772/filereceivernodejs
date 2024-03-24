@@ -1,5 +1,5 @@
 const { Model, DataTypes } = require("sequelize");
-const sequelize = require("../config/database"); // Corrigindo o caminho para o arquivo de configuração do Sequelize
+const sequelize = require("../config/config"); // Corrigindo o caminho para o arquivo de configuração do Sequelize
 const { v4: uuidv4 } = require("uuid");
 const crypto = require("crypto");
 
