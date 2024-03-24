@@ -162,14 +162,24 @@ async function fazerLogin(req, res) {
     const usuario = await Usuario.findOne({ where: { email } });
 
     if (!usuario || usuario.senha !== hashSenha) {
-      enviarEmailLoginMalSucedido(email, obterIpReal(req), usuario.nome);
+      enviarEmailLoginMalSucedido(
+        email,
+        obterIpReal(req),
+        usuario.nome,
+        "Email ou senha inválidos."
+      );
       return res
         .status(401)
         .json({ sucesso: false, message: "Email ou senha inválidos." });
     }
 
     if (!usuario.emailVerificado) {
-      enviarEmailLoginMalSucedido(email, obterIpReal(req), usuario.nome);
+      enviarEmailLoginMalSucedido(
+        email,
+        obterIpReal(req),
+        usuario.nome,
+        "Email não verificado."
+      );
       return res.status(403).json({
         sucesso: false,
         message: "Email não verificado. Por favor, verifique seu email.",
