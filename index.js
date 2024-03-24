@@ -246,14 +246,13 @@ app.post("/saveqr", async (req, res) => {
         .json({ error: "Token ou perm ausente na solicitação" });
     }
 
-    // Encontra o QRCode com base no token fornecido
-    const qr = await qrcode.findOne({ where: { token: token } });
+    // Atualiza o QRCode com base no token fornecido
+    const updatedRows = await qrcode.update(
+      { perm: perm },
+      { where: { token: token } }
+    );
 
-    if (qr) {
-      // Atualiza a coluna 'perm' com o valor fornecido
-      qr.perm = perm;
-      await qr.save(); // Salva as alterações no banco de dados
-
+    if (updatedRows > 0) {
       return res.json({ status: "ok" }); // Retorna uma resposta de sucesso
     } else {
       // Se o QRCode não for encontrado, retorna uma mensagem de erro
@@ -265,6 +264,7 @@ app.post("/saveqr", async (req, res) => {
     return res.status(500).json({ error: "Erro interno do servidor" });
   }
 });
+
 app.post("/regen_event", async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
