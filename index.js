@@ -14,6 +14,7 @@ const moment = require("moment");
 const sequelize = require("./config/config"); // Importa a instância do Sequelize
 const Usuario = require("./models/usuarios"); // Importa o modelo de usuários
 const Arquivo = require("./models/arquivos");
+const IPS = require("./models/ips");
 const WALogin = require("./models/walogin"); // Importa o modelo de arquivos
 const nodemailer = require("nodemailer");
 const Cob = require("./models/cob");
@@ -29,6 +30,30 @@ const cron = require("node-cron");
 const WebToken = require("./models/webtoken");
 
 const jwt = require("jsonwebtoken");
+
+function obterIpReal(req) {
+  return req.headers["cf-connecting-ip"] || req.connection.remoteAddress;
+}
+
+async function registrarIP(req, res, next) {
+  const ip = req.headers["cf-connecting-ip"] || req.connection.remoteAddress;
+
+  try {
+    // Verifica se o IP já está cadastrado no banco de dados
+    const ipExistente = await IPS.findOne({ where: { ip } });
+
+    // Se o IP não existir, cria um novo registro no banco de dados
+    if (!ipExistente) {
+      await IPS.create({ ip });
+    }
+
+    // Chama a função next() para continuar o fluxo da solicitação
+    next();
+  } catch (error) {
+    console.error("Erro ao registrar o IP:", error);
+    return res.status(500).send("Erro interno do servidor");
+  }
+}
 
 const transporter = nodemailer.createTransport({
   host: "mail.viniciusdev.com.br",
@@ -181,26 +206,26 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json({ limit: "800mb" }));
 app.use(bodyParser.urlencoded({ limit: "800mb", extended: true }));
 
-app.post("/new_user", UsuarioController.criarUsuario);
-app.post("/login", UsuarioController.fazerLogin);
-app.post("/login/wa", UsuarioController.fazerLoginWA);
+app.post("/new_user", registrarIP, UsuarioController.criarUsuario);
+app.post("/login", registrarIP, UsuarioController.fazerLogin);
+app.post("/login/wa", registrarIP, UsuarioController.fazerLoginWA);
 
-app.post("/dashboard", UsuarioController.dashboard);
+app.post("/dashboard", registrarIP, UsuarioController.dashboard);
 
-app.get("/download", UsuarioController.download);
+app.get("/download", registrarIP, UsuarioController.download);
 
-app.get("/verificar-email", UsuarioController.verificarEmail);
-app.post("/delete_event", FilesController.apagar);
-app.post("/change_plan", UsuarioController.MudarPlano);
+app.get("/verificar-email", registrarIP, UsuarioController.verificarEmail);
+app.post("/delete_event", registrarIP, FilesController.apagar);
+app.post("/change_plan", registrarIP, UsuarioController.MudarPlano);
 
-app.post("/wabot/check", WAController.check);
-app.post("/wabot/logout", WAController.logout);
-app.post("/wabot/arquivos", WAController.arquivos);
-app.get("/wabot/link", WAController.handler);
+app.post("/wabot/check", registrarIP, WAController.check);
+app.post("/wabot/logout", registrarIP, WAController.logout);
+app.post("/wabot/arquivos", registrarIP, WAController.arquivos);
+app.get("/wabot/link", registrarIP, WAController.handler);
 app.use("/uploads", express.static("./uploads"));
 //definir
 
-app.post("/register_qr", async (req, res) => {
+app.post("/register_qr", registrarIP, async (req, res) => {
   try {
     const { token, unico } = req.body;
 
@@ -214,7 +239,7 @@ app.post("/register_qr", async (req, res) => {
   }
 });
 
-app.post("/check_qr", async (req, res) => {
+app.post("/check_qr", registrarIP, async (req, res) => {
   try {
     const { token } = req.body;
 
@@ -235,7 +260,7 @@ app.post("/check_qr", async (req, res) => {
   }
 });
 
-app.post("/saveqr", async (req, res) => {
+app.post("/saveqr", registrarIP, async (req, res) => {
   try {
     const { token, perm } = req.body;
 
@@ -265,7 +290,7 @@ app.post("/saveqr", async (req, res) => {
   }
 });
 
-app.post("/regen_event", async (req, res) => {
+app.post("/regen_event", registrarIP, async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
@@ -306,6 +331,7 @@ app.post("/regen_event", async (req, res) => {
 
 app.post(
   "/upload_event",
+  registrarIP,
   UsuarioController.uploadEvent,
   UsuarioController.handleUpload
 );
@@ -434,11 +460,11 @@ async function ListarCobrancas() {
   }
 }
 
-app.get("/", (req, res) => {
+app.get("/", registrarIP, (req, res) => {
   res.send("SERVIDOR DO SITE SERVIDOR.VINICIUSDEV.COM.BR");
 });
 
-app.post("/new_remote", async (req, res) => {
+app.post("/new_remote", registrarIP, async (req, res) => {
   const { token, celular } = req.body;
   await WebToken.create({ uuid: token, celular: celular });
 
