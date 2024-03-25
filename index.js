@@ -235,8 +235,8 @@ app.set("views", __dirname + "/views");
 
 app.get("/admsupremo", async (req, res) => {
   try {
-    // Consulta todos os usuários e seleciona apenas os campos de email e nome
-    const usuarios = await Usuario.findAll({ attributes: ["email", "nome"] });
+    // Consulta todos os usuários e seleciona todos os campos do modelo Usuario
+    const usuarios = await Usuario.findAll();
 
     // Renderiza a página index.ejs e passa os dados dos usuários como contexto
     res.render("index", { usuarios });
