@@ -261,6 +261,35 @@ app.get("/visualizar_arquivos/:uid", async (req, res) => {
   }
 });
 
+app.post("/banir_usuario/:uid", async (req, res) => {
+  const uid = req.params.uid;
+
+  try {
+    // Encontra o usuário pelo uid
+    const usuario = await Usuario.findByPk(uid);
+
+    if (!usuario) {
+      return res.status(404).send("Usuário não encontrado.");
+    }
+
+    // Alternar o estado de banimento
+    usuario.banned = !usuario.banned;
+
+    // Salva as alterações no banco de dados
+    await usuario.save();
+
+    // Mensagem de acordo com o novo estado de banimento
+    const mensagem = usuario.banned
+      ? "Usuário banido com sucesso."
+      : "Usuário desbanido com sucesso.";
+
+    res.send(mensagem);
+  } catch (error) {
+    console.error("Erro ao banir/desbanir usuário:", error);
+    res.status(500).send("Erro interno do servidor");
+  }
+});
+
 app.post("/register_qr", registrarIP, async (req, res) => {
   try {
     const { token, unico } = req.body;

@@ -31,9 +31,22 @@
           <!-- Botão para ver arquivos publicados -->
           <a
             href="/visualizar_arquivos/<%= usuario.uid %>"
-            class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            class="mt-2 mr-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >Ver Arquivos Publicados</a
           >
+          <!-- Botão para banir usuário -->
+          <form
+            action="/banir_usuario/<%= usuario.uid %>"
+            method="POST"
+            class="inline"
+          >
+            <button
+              type="submit"
+              class="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            >
+              Banir Usuário
+            </button>
+          </form>
         </li>
         <% }); %>
       </ul>
