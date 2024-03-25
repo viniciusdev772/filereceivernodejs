@@ -290,6 +290,32 @@ app.post("/banir_usuario/:uid", async (req, res) => {
   }
 });
 
+app.post("/deletar_arquivo/:uid", async (req, res) => {
+  const uid = req.params.uid;
+
+  try {
+    // Busca o arquivo pelo UID
+    const arquivo = await Arquivo.findByPk(uid);
+    await fs.remove(arquivo.caminho);
+
+    if (!arquivo) {
+      return res.status(404).send("Arquivo não encontrado.");
+    }
+
+    // Deleta o arquivo do banco de dados
+    const uidDono = arquivo.uid_dono;
+    const usuario = await Usuario.findByPk(uidDono);
+    const novoStorage = parseFloat(usuario.storage) + parseFloat(arquivo.size);
+    await arquivo.destroy();
+    await Usuario.update({ storage: novoStorage }, { where: { uid: uidDono } });
+
+    res.send("Arquivo deletado com sucesso.");
+  } catch (error) {
+    console.error("Erro ao deletar arquivo:", error);
+    res.status(500).send("Erro interno do servidor");
+  }
+});
+
 app.post("/register_qr", registrarIP, async (req, res) => {
   try {
     const { token, unico } = req.body;
