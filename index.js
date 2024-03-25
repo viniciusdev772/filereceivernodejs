@@ -45,6 +45,12 @@ async function registrarIP(req, res, next) {
     // Se o IP não existir, cria um novo registro no banco de dados
     if (!ipExistente) {
       await IPS.create({ ip });
+    } else {
+      // Se o IP existir, verifica se está bloqueado
+      if (ipExistente.bloqueado) {
+        console.log("IP bloqueado:", ip);
+        return res.status(403).send("Acesso proibido para este IP");
+      }
     }
 
     // Chama a função next() para continuar o fluxo da solicitação
