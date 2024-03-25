@@ -229,7 +229,13 @@ app.post("/wabot/logout", registrarIP, WAController.logout);
 app.post("/wabot/arquivos", registrarIP, WAController.arquivos);
 app.get("/wabot/link", registrarIP, WAController.handler);
 app.use("/uploads", express.static("./uploads"));
-//definir
+
+app.set("view engine", "ejs");
+app.set("views", __dirname + "/views");
+
+app.get("/admsupremo", (req, res) => {
+  res.render("index", { nome: "Usuário" });
+});
 
 app.post("/register_qr", registrarIP, async (req, res) => {
   try {
