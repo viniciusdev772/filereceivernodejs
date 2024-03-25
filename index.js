@@ -290,6 +290,37 @@ app.post("/banir_usuario/:uid", async (req, res) => {
   }
 });
 
+app.get("/compor_mensagem", (req, res) => {
+  res.render("compor_mensagem");
+});
+
+app.post("/enviar_email_todos_usuarios", async (req, res) => {
+  const { assunto, mensagem } = req.body;
+
+  try {
+    // Consulta todos os usuários
+    const usuarios = await Usuario.findAll();
+
+    // Prepara o corpo do email
+    const mailOptions = {
+      from: "suv@viniciusdev.com.br", // Seu endereço de email
+      subject: assunto,
+      text: mensagem,
+    };
+
+    // Itera sobre todos os usuários e envia o email
+    for (const usuario of usuarios) {
+      mailOptions.to = usuario.email; // Define o destinatário como o email do usuário atual
+      await transporter.sendMail(mailOptions); // Envia o email
+    }
+
+    res.send("Email enviado para todos os usuários com sucesso.");
+  } catch (error) {
+    console.error("Erro ao enviar email para todos os usuários:", error);
+    res.status(500).send("Erro interno do servidor");
+  }
+});
+
 app.post("/deletar_arquivo/:uid", async (req, res) => {
   const uid = req.params.uid;
 
