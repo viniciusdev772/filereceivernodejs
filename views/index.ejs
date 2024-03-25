@@ -11,7 +11,6 @@
       href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
       rel="stylesheet"
     />
-    <script src="https://cdn.viniciusdev.com.br/uploads/utils.js"></script>
   </head>
   <body class="bg-gray-100">
     <div class="container mx-auto p-4">
@@ -23,7 +22,7 @@
           <p class="text-gray-600">Email: <%= usuario.email %></p>
           <p class="text-gray-600">Plano: <%= usuario.planos %></p>
           <p class="text-gray-600">
-            Espaço de Armazenamento: <%= bytesToSize(usuario.storage) %>
+            Espaço de Armazenamento: <%= usuario.storage %>
           </p>
           <p class="text-gray-600">Expira em: <%= usuario.expira_em %></p>
           <p class="text-gray-600">

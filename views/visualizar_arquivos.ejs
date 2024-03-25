@@ -21,32 +21,14 @@
           <p class="text-lg font-semibold">
             Nome do Arquivo: <%= arquivo.nome %>
           </p>
-          <p class="text-gray-600">Tamanho: <%= bytesToSize(arquivo.size) %></p>
+          <p class="text-gray-600">Tamanho: <%= arquivo.size %></p>
           <p class="text-gray-600">
             Número de Downloads: <%= arquivo.download_count %>
           </p>
-          <p class="text-gray-600">
-            Link Direto:
-            <a
-              href="<%= arquivo.caminho %>"
-              target="_blank"
-              class="text-blue-500 hover:underline"
-              >Download</a
-            >
-          </p>
-          <!-- Adicione o código para exibir mais informações sobre o arquivo, se necessário -->
+          <!-- Adicione o código para exibir o arquivo, se necessário -->
         </li>
         <% }); %>
       </ul>
     </div>
-    <script>
-      // Função para converter bytes em uma representação legível
-      function bytesToSize(bytes) {
-        const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-        if (bytes === 0) return "0 Byte";
-        const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-        return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
-      }
-    </script>
   </body>
 </html>
