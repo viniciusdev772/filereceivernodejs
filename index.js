@@ -246,6 +246,21 @@ app.get("/admsupremo", async (req, res) => {
   }
 });
 
+app.get("/visualizar_arquivos/:uid", async (req, res) => {
+  const uid = req.params.uid;
+
+  try {
+    // Consulta os arquivos do usuário com base no uid
+    const arquivos = await Arquivo.findAll({ where: { uid_dono: uid } });
+
+    // Renderiza a página visualizar_arquivos.ejs e passa os dados dos arquivos como contexto
+    res.render("visualizar_arquivos", { arquivos });
+  } catch (error) {
+    console.error("Erro ao obter arquivos do usuário:", error);
+    res.status(500).send("Erro interno do servidor");
+  }
+});
+
 app.post("/register_qr", registrarIP, async (req, res) => {
   try {
     const { token, unico } = req.body;

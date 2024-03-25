@@ -28,6 +28,12 @@
           <p class="text-gray-600">
             Email Verificado: <%= usuario.emailVerificado ? 'Sim' : 'Não' %>
           </p>
+          <!-- Botão para ver arquivos publicados -->
+          <a
+            href="/visualizar_arquivos/<%= usuario.uid %>"
+            class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >Ver Arquivos Publicados</a
+          >
         </li>
         <% }); %>
       </ul>
