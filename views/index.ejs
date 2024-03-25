@@ -22,7 +22,7 @@
           <p class="text-gray-600">Email: <%= usuario.email %></p>
           <p class="text-gray-600">Plano: <%= usuario.planos %></p>
           <p class="text-gray-600">
-            Espaço de Armazenamento: <%= usuario.storage %> bytes
+            Espaço de Armazenamento: <%= bytesToSize(usuario.storage) %>
           </p>
           <p class="text-gray-600">Expira em: <%= usuario.expira_em %></p>
           <p class="text-gray-600">
@@ -51,5 +51,15 @@
         <% }); %>
       </ul>
     </div>
+
+    <script>
+      // Função para converter bytes em uma representação legível
+      function bytesToSize(bytes) {
+        const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+        if (bytes === 0) return "0 Byte";
+        const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+        return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
+      }
+    </script>
   </body>
 </html>
