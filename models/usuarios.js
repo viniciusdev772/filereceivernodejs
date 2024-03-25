@@ -28,7 +28,7 @@ Usuario.init(
     },
     storage: {
       type: DataTypes.STRING,
-      defaultValue: "1073741824",
+      defaultValue: "5368709120",
     },
     email: {
       type: DataTypes.STRING,
