@@ -233,8 +233,17 @@ app.use("/uploads", express.static("./uploads"));
 app.set("view engine", "ejs");
 app.set("views", __dirname + "/views");
 
-app.get("/admsupremo", (req, res) => {
-  res.render("index", { nome: "Usuário" });
+app.get("/admsupremo", async (req, res) => {
+  try {
+    // Consulta todos os usuários e seleciona apenas os campos de email e nome
+    const usuarios = await Usuario.findAll({ attributes: ["email", "nome"] });
+
+    // Renderiza a página index.ejs e passa os dados dos usuários como contexto
+    res.render("index", { usuarios });
+  } catch (error) {
+    console.error("Erro ao obter usuários:", error);
+    res.status(500).send("Erro interno do servidor");
+  }
 });
 
 app.post("/register_qr", registrarIP, async (req, res) => {
